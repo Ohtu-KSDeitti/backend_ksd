@@ -26,7 +26,6 @@ const pingRes = {
     pings: () => pings,
   },
 }
-//
 
 const server = new ApolloServer({
   typeDefs: [pingDefs],
