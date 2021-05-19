@@ -1,1 +1,1 @@
-npm start
+npm run heroku_dev

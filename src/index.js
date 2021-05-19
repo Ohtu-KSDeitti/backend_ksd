@@ -1,35 +1,10 @@
-const { ApolloServer, gql } = require('apollo-server')
-const { merge } = require('lodash')
-
-/* Esimerkkinä kovakoodattu tietokantataulu ping
-
-Myöhemmin taulujen määritelmät src/models jne?
-*/
-const pingDefs = gql`
-    type Ping {
-        ping: String
-    }
-
-    type Query {
-        pings: [Ping]
-    }
-`
-
-const pings = [
-  {
-    ping: 'pong',
-  },
-]
-
-const pingRes = {
-  Query: {
-    pings: () => pings,
-  },
-}
+const { ApolloServer } = require('apollo-server')
+const { typeDefs, resolvers } = require('./config/apollo_config')
 
 const server = new ApolloServer({
-  typeDefs: [pingDefs],
-  resolvers: merge(pingRes),
+  cors: true,
+  typeDefs: typeDefs,
+  resolvers: resolvers,
 })
 
 server.listen().then(({ url }) => {
