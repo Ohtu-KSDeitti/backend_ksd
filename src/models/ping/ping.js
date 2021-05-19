@@ -14,6 +14,9 @@ const pings = [
   {
     ping: 'pong',
   },
+  {
+    ping: 'kong',
+  },
 ]
 
 module.exports.pingRes = {
