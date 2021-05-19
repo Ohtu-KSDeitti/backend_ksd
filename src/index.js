@@ -1,12 +1,13 @@
 const { ApolloServer } = require('apollo-server')
-const { typeDefs, resolvers } = require('./config/apollo_config')
+const { PORT, typeDefs, resolvers, logger } = require('./config/apollo_config')
 
 const server = new ApolloServer({
   cors: true,
   typeDefs: typeDefs,
   resolvers: resolvers,
+  plugins: [logger],
 })
 
-server.listen({ port: process.env.PORT }).then(({ url }) => {
+server.listen({ port: PORT }).then(({ url }) => {
   console.log(`Server ready at ${url}`)
 })
