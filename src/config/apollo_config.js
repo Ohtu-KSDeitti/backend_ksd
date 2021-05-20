@@ -1,5 +1,6 @@
-const { pingDefs, pingRes } = require('../models/ping/ping')
+/* eslint-disable no-console */
 const { merge } = require('lodash')
+const { pingDefs, pingRes } = require('../models/ping/ping')
 require('dotenv').config()
 
 module.exports.PORT = process.env.PORT

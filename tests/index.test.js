@@ -4,4 +4,3 @@ describe('This variable', () => {
     expect(a).toBe(1)
   })
 })
-

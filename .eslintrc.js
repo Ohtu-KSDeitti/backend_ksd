@@ -1,25 +1,25 @@
 module.exports = {
-  'env': {
-    'node': true,
-    'browser': true,
-    'commonjs': true,
-    'es2021': true,
-    'jest': true,
+  env: {
+    node: true,
+    browser: true,
+    commonjs: true,
+    es2021: true,
+    jest: true,
   },
-  'extends': ['eslint:recommended', 'google'],
-  'parserOptions': {
-    'ecmaVersion': 12,
+  extends: ['eslint:recommended', 'airbnb'],
+  parserOptions: {
+    ecmaVersion: 12,
   },
-  'rules': {
-    'eqeqeq': 'error',
+  rules: {
+    eqeqeq: 'error',
     'no-trailing-spaces': 'error',
     'object-curly-spacing': [
       'error', 'always',
     ],
     'arrow-spacing': [
-      'error', { 'before': true, 'after': true },
+      'error', { before: true, after: true },
     ],
-    'indent': [
+    indent: [
       'error',
       2,
     ],
@@ -27,11 +27,11 @@ module.exports = {
       'error',
       'windows',
     ],
-    'quotes': [
+    quotes: [
       'error',
       'single',
     ],
-    'semi': [
+    semi: [
       'error',
       'never',
     ],
