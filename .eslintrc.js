@@ -6,12 +6,12 @@ module.exports = {
     es2021: true,
     jest: true,
   },
-  extends: ['eslint:recommended', 'airbnb'],
+  extends: ['eslint:recommended', 'google'],
   parserOptions: {
     ecmaVersion: 12,
   },
   rules: {
-    eqeqeq: 'error',
+    'eqeqeq': 'error',
     'no-trailing-spaces': 'error',
     'object-curly-spacing': [
       'error', 'always',
@@ -19,7 +19,7 @@ module.exports = {
     'arrow-spacing': [
       'error', { before: true, after: true },
     ],
-    indent: [
+    'indent': [
       'error',
       2,
     ],
@@ -27,11 +27,11 @@ module.exports = {
       'error',
       'windows',
     ],
-    quotes: [
+    'quotes': [
       'error',
       'single',
     ],
-    semi: [
+    'semi': [
       'error',
       'never',
     ],
