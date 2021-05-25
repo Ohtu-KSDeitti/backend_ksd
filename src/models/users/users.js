@@ -4,14 +4,13 @@ const userList = [
   {
     id: 123,
     username: 'k0psutin',
-    password: 'asdf983012',
     name: 'jani',
+    password: 'asdf983012',
   },
   {
     id: 133,
-    age: 20,
-    name: 'lul',
     username: 'kek',
+    name: 'lul',
     password: 'pallo123',
   },
 ]
