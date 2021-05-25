@@ -1,16 +1,38 @@
+const { buildFederatedSchema } = require('@apollo/federation')
 const { ApolloServer } = require('apollo-server')
-const {
-  PORT, typeDefs, resolvers, logger,
-} = require('./config/apollo_config')
+const { PORT } = require('./config/apollo_config')
+const { typeDefs, resolvers } = require('./models/users/users')
 
 const server = new ApolloServer({
-  cors: true,
-  typeDefs,
-  resolvers,
-  plugins: [logger],
+  schema: buildFederatedSchema([
+    {
+      typeDefs,
+      resolvers,
+    },
+  ]),
+  plugins: [
+    {
+      requestDidStart: ( requestContext ) => {
+        if ( requestContext.request.http?.headers.has( 'x-apollo-tracing' ) ) {
+          return
+        }
+        const query =
+          requestContext.request.query?.replace( /\s+/g, ' ' ).trim()
+        const variables = JSON.stringify( requestContext.request.variables )
+        console.log('user-api <-',
+          new Date().toISOString(),
+          `- [Request Started] { query: ${ query }, 
+          variables: ${ variables }, 
+          operationName: ${ requestContext.request.operationName } }` )
+        return
+      },
+    },
+  ],
 })
 
 server.listen({ port: PORT }).then(({ url }) => {
-  // eslint-disable-next-line no-console
-  console.log(`Server ready at ${url}`)
+  console.log(`user-api <- ready at url: ${url}`)
+}).catch((err) => {
+  console.log('user-api <- cannot connect to service(s)')
+  console.log('user-api <-', err.message)
 })
