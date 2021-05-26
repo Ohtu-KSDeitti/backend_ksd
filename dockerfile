@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 8081
 
 #Start backend
-CMD["npm", "start"]
+CMD ["npm", "start"]
