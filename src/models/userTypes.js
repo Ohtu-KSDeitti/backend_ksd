@@ -5,7 +5,8 @@ type User {
   id: ID!
   username: String!
   password: String!
-  name: String!
+  firstname: String!
+  lastname: String!
   location: String!
   email: String!
   gender: String!
@@ -40,7 +41,8 @@ type Mutation {
   addUser(
     username: String!
     password: String!
-    name: String!
+    firstname: String!
+    lastname: String!
     location: String!
     email: String!
     gender: String!
