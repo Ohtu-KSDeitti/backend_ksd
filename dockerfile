@@ -13,8 +13,11 @@ RUN npm install
 #Dump source code to docker image
 COPY . .
 
-#Open port 8081
-EXPOSE 8081
+#Set PORT to 8081
+ENV PORT=8082
+
+#Open port 8082
+EXPOSE 8082
 
 #Start backend
 CMD ["npm", "start"]
