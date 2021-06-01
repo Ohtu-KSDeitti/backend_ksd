@@ -8,18 +8,23 @@ const {
   login,
 } = require('./users')
 
-const resolvers = {
-  Query: {
-    userCount: () => getUserCount(),
-    allUsers: () => getAllUsers(),
-    findUser: (_root, args) => findUserByUsername(args.username),
-    findUserById: (_root, args) => findUserById(args.id),
-  },
-  Mutation: {
-    addUser: (_root, args) => addNewUser(args),
-    deleteUser: (_root, args) => deleteUserById(args.id),
-    login: (_root, args) => login(args.username, args.password),
-  },
-}
+const { docClient } = require('../config/dynamodb_config')
 
-module.exports = { resolvers }
+const getResolvers = (client = docClient) =>
+  (
+    {
+      Query: {
+        userCount: () => getUserCount(client),
+        allUsers: () => getAllUsers(client),
+        findUser: (_root, args) => findUserByUsername(args.username, client),
+        findUserById: (_root, args) => findUserById(args.id, client),
+      },
+      Mutation: {
+        addUser: (_root, args) => addNewUser(args, client),
+        deleteUser: (_root, args) => deleteUserById(args.id, client),
+        login: (_root, args) => login(args.username, args.password, client),
+      },
+    }
+  )
+
+module.exports = { getResolvers }

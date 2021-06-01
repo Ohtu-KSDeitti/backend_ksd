@@ -2,7 +2,9 @@ const { buildFederatedSchema } = require('@apollo/federation')
 const { ApolloServer } = require('apollo-server')
 const { PORT } = require('./config/apollo_config')
 const { typeDefs } = require('./models/userTypes')
-const { resolvers } = require('./models/userResolvers')
+const { getResolvers } = require('./models/userResolvers')
+
+const resolvers = getResolvers()
 
 const server = new ApolloServer({
   schema: buildFederatedSchema([

@@ -5,12 +5,7 @@ type User {
   id: ID!
   username: String!
   password: String!
-  firstname: String!
-  lastname: String!
-  location: String!
   email: String!
-  gender: String!
-  age: Int!
   userInfo: UserInfo
   friendList: [Match]
 }
@@ -25,6 +20,11 @@ type Token {
 }
 
 type UserInfo {
+  firstname: String
+  lastname: String
+  location: String
+  gender: String
+  dateOfBirth: String
   profileLikes: Int
   bio: String
   tags: [String]
@@ -41,12 +41,7 @@ type Mutation {
   addUser(
     username: String!
     password: String!
-    firstname: String!
-    lastname: String!
-    location: String!
     email: String!
-    gender: String!
-    age: Int! 
   ): User
   deleteUser(
     id: ID!

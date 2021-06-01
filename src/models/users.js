@@ -1,16 +1,10 @@
-const AWS = require('aws-sdk')
-const config = require('../../config')
+
 const { v4: uuidv4 } = require('uuid')
 const bcrypt = require('bcrypt')
+const { TABLENAME } = require('../config/dynamodb_config')
 
-AWS.config.update(config.aws_remote_config)
-
-const TABLENAME = config.aws_table_name
-
-const docClient = new AWS.DynamoDB.DocumentClient()
-
-const login = async (username, password) => {
-  const user = await findUserByUsername(username)
+const login = async (username, password, client) => {
+  const user = await findUserByUsername(username, client)
 
   const pswdCorrect = user === null ?
     false :
@@ -22,22 +16,22 @@ const login = async (username, password) => {
   return value
 }
 
-const getAllUsers = () => {
-  return docClient
+const getAllUsers = (client) => {
+  return client
     .scan({ TableName: TABLENAME })
     .promise()
     .then((data) => data.Items)
 }
 
-const getUserCount = () => {
-  return docClient
+const getUserCount = (client) => {
+  return client
     .scan({ TableName: TABLENAME })
     .promise()
     .then((data) => data.Count)
 }
 
 
-const findUserByUsername = (username) => {
+const findUserByUsername = (username, client) => {
   const params = {
     TableName: TABLENAME,
     FilterExpression: '#searchUsername = :searchUsername',
@@ -48,27 +42,27 @@ const findUserByUsername = (username) => {
       ':searchUsername': username.toLowerCase(),
     },
   }
-  return docClient
+  return client
     .scan(params)
     .promise()
     .then((data) => data.Items[0])
 }
 
-const findUserById = (id) => {
+const findUserById = (id, client) => {
   const params = {
     TableName: TABLENAME,
     Key: {
       'id': id,
     },
   }
-  return docClient
+  return client
     .get(params)
     .promise()
     .then((data) => data.Item)
 }
 
-const addNewUser = async (user) => {
-  const doesExist = await findUserByUsername(user.username)
+const addNewUser = async (user, client) => {
+  const doesExist = await findUserByUsername(user.username, client)
 
   if (doesExist) {
     return null
@@ -92,13 +86,13 @@ const addNewUser = async (user) => {
     Item: newUser,
   }
 
-  return docClient
+  return client
     .put(params)
     .promise()
     .then(() => newUser)
 }
 
-const deleteUserById = (id) => {
+const deleteUserById = (id, client) => {
   const params = {
     TableName: TABLENAME,
     Key: {
@@ -106,9 +100,9 @@ const deleteUserById = (id) => {
     },
   }
 
-  const User = findUserById(id)
+  const User = findUserById(id, client)
 
-  return docClient
+  return client
     .delete(params)
     .promise()
     .then(() => User)
