@@ -31,7 +31,7 @@ jobs:
         id: deploy
         run: |
           aws deploy create-deployment \
-            --application-name User-Api-CodeDeploy \
+            --application-name user-api-deployer \
             --deployment-group-name KSD \
             --deployment-config-name CodeDeployDefault.OneAtATime \
             --github-location repository=${{ github.repository }},commitId=${{ github.sha }}
