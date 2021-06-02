@@ -143,6 +143,49 @@ describe('User-api tests', () => {
 
     expect(deleteUser).toEqual(null)
   })
+
+  test('updateUserInfo updates info', async () => {
+    const FIND_USER = gql`
+    query {
+     findUser(username: "juuso23") {
+       id
+       username
+     }
+    }
+   `
+
+    const { data: { findUser } } = await query({ query: FIND_USER })
+
+    const UPDATE_USER_INFO = gql`
+    mutation($id: ID!, $firstname: String, $lastname: String){
+      updateUserInfo(
+        id: $id,
+        firstname: $firstname,
+        lastname: $lastname
+        ){
+        userInfo {
+          firstname
+          lastname
+        }
+      }
+    }
+    `
+
+    const { data: { updateUserInfo } } =
+      await mutate(
+        { mutation: UPDATE_USER_INFO,
+          variables:
+          {
+            id: findUser.id,
+            firstname: 'Juuso',
+            lastname: 'Eskelinen',
+          },
+        })
+
+    console.log(updateUserInfo)
+    expect(updateUserInfo).toEqual(
+      { userInfo: { firstname: 'Juuso', lastname: 'Eskelinen' } })
+  })
 })
 
 
