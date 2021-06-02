@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -16,6 +16,11 @@ jobs:
         run: npm run test
       - name: Run ESLint
         run: npm run lint
+      - name: Test frontend jest tests
+        run: npm run coverage
+        working-directory: src
+      - name: Data to codecov
+        run: bash <(curl -s https://codecov.io/bash)
 
   CD:
     runs-on: ubuntu-latest
