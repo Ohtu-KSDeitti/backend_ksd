@@ -36,7 +36,6 @@ jobs:
           envkey_TABLE: ${{ secrets.TABLE }}
           envkey_TABLE_DEV: ${{ secrets.TABLE_DEV }}
           envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
-          file_name: .env
   CD:
     runs-on: ubuntu-latest
     needs: [CI, Create_env-file]
