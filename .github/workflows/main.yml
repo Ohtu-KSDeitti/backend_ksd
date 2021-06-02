@@ -39,7 +39,8 @@ jobs:
           file_name: .env
   CD:
     runs-on: ubuntu-latest
-    needs: [ CI, Create_env-file ]
+    needs: [CI, Create_env-file]
+    steps:
       - name: Configure AWS
         uses: aws-actions/configure-aws-credentials@v1
         with:
