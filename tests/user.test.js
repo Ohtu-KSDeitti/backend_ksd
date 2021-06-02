@@ -18,7 +18,7 @@ describe('User-api tests', () => {
     mutation{
       addUser(
           username: "juuso23", 
-          password: "sikret", 
+          password: "bigsikret", 
           email: "jeejee@com.fi", 
         ){
           username
@@ -33,7 +33,7 @@ describe('User-api tests', () => {
     mutation{
       addUser(
           username: "heikki123", 
-          password: "sikret", 
+          password: "bigsikret", 
           email: "jeejee@com.fi", 
         ){
           username
