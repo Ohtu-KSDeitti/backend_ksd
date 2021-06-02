@@ -16,7 +16,7 @@ type Match {
 }
 
 type Token {
-   value: String!
+   value: String
 }
 
 type UserInfo {
@@ -35,6 +35,7 @@ type Query {
   allUsers: [User!]!
   findUser(username: String): User
   findUserById(id: ID!): User
+  currentUser: User
 }
 
 type Mutation {
@@ -50,6 +51,16 @@ type Mutation {
     username: String!
     password: String!
   ): Token
+  updateUserInfo(
+    id: ID!
+    firstname: String
+    lastname: String
+    location: String
+    gender: String
+    dateOfBirth: String
+    bio: String
+    tags: [String]
+  ): User
 }
 `
 
