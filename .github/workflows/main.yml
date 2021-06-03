@@ -12,11 +12,9 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install dependencies
         run: npm ci
-      - name: Run Jest tests
-        run: npm run test
       - name: Run ESLint
         run: npm run lint
-      - name: Test frontend jest tests
+      - name:  Run jest tests and create coverage report
         run: npm run coverage
         working-directory: src
       - name: Data to codecov
