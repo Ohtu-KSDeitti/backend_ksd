@@ -11,9 +11,13 @@ const JWT_SECRET = process.env.SECRET_KEY
 const login = async (username, password, client) => {
   const user = await findUserByUsername(username, client)
 
+  if (!user) {
+    throw new AuthenticationError('Invalid username or password')
+  }
+
   const correctPassword = await bcrypt.compare(password, user.password)
 
-  if (!user || !correctPassword) {
+  if (!correctPassword) {
     throw new AuthenticationError('Invalid username or password')
   }
 

@@ -1,17 +1,17 @@
 const { buildFederatedSchema } = require('@apollo/federation')
-const { findUserById } = require('../models/users')
-const { docClient } = require('./dynamodb_config')
+// const { findUserById } = require('../models/users')
+// const { docClient } = require('./dynamodb_config')
 const { typeDefs } = require('../models/userTypes')
 const { getResolvers } = require('../models/userResolvers')
-const jwt = require('jsonwebtoken')
-const { AuthenticationError } = require('apollo-server')
+// const jwt = require('jsonwebtoken')
+// const { AuthenticationError } = require('apollo-server')
 
 const resolvers = getResolvers()
 
 require('dotenv').config()
 
 const PORT = process.env.PORT
-const JWT_SECRET = process.env.SECRET_KEY
+// const JWT_SECRET = process.env.SECRET_KEY
 const ENV = process.env.NODE_ENV
 const config = {
   schema: buildFederatedSchema([
@@ -19,8 +19,7 @@ const config = {
       typeDefs,
       resolvers,
     },
-  ]),
-  context: async ({ req }) => {
+  ]), /* ,  context: async ({ req }) => { // Move to gateway-api ?
     const auth = req.body.variables.authorization || null
     const login = (req.body.operationName === 'login' ||
     req.body.operationName === 'addUser')
@@ -40,7 +39,7 @@ const config = {
     if (!login) {
       throw new AuthenticationError('Unauthorized token!')
     }
-  },
+  } */
   plugins: [
     {
       requestDidStart: ( requestContext ) => {
