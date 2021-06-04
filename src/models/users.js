@@ -9,7 +9,11 @@ require('dotenv').config()
 const JWT_SECRET = process.env.SECRET_KEY
 
 const login = async (username, password, client) => {
-  const user = await findUserByUsername(username, client)
+  const user = await findUserByUsername(
+    username,
+    client,
+    { currentUser: 'none' },
+  )
 
   if (!user) {
     throw new AuthenticationError('Invalid username or password')
@@ -29,15 +33,19 @@ const login = async (username, password, client) => {
   return { value: jwt.sign(userForToken, JWT_SECRET, { expiresIn: 900 }) }
 }
 
-const getAllUsers = (client) => client
-  .scan({ TableName: TABLENAME })
-  .promise()
-  .then((data) => data.Items)
+const getAllUsers = (client) => {
+  return client
+    .scan({ TableName: TABLENAME })
+    .promise()
+    .then((data) => data.Items)
+}
 
-const getUserCount = (client) => client
-  .scan({ TableName: TABLENAME })
-  .promise()
-  .then((data) => data.Count)
+const getUserCount = (client) => {
+  return client
+    .scan({ TableName: TABLENAME })
+    .promise()
+    .then((data) => data.Count)
+}
 
 const findUserByUsername = (username, client) => {
   const params = {
@@ -91,7 +99,8 @@ const addNewUser = async (user, client) => {
     )
   }
 
-  const doesExist = await findUserByUsername(user.username, client)
+  const doesExist =
+    await findUserByUsername(user.username, client)
 
   if (doesExist) {
     return null
