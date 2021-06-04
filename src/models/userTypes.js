@@ -4,6 +4,8 @@ const typeDefs = gql`
 type User {
   id: ID!
   username: String!
+  firstname: String!
+  lastname: String!
   password: String!
   email: String!
   userInfo: UserInfo
@@ -20,8 +22,6 @@ type Token {
 }
 
 type UserInfo {
-  firstname: String
-  lastname: String
   location: String
   gender: String
   dateOfBirth: String
@@ -41,7 +41,10 @@ type Query {
 type Mutation {
   addNewUser(
     username: String!
+    firstname: String!
+    lastname: String!
     password: String!
+    passwordconf: String!
     email: String!
   ): User
   deleteUserById(
@@ -53,8 +56,6 @@ type Mutation {
   ): Token
   updateUserInfo(
     id: ID!
-    firstname: String
-    lastname: String
     location: String
     gender: String
     dateOfBirth: String

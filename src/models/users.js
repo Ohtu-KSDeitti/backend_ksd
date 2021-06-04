@@ -78,14 +78,38 @@ const findUserById = (id, client) => {
 }
 
 const addNewUser = async (user, client) => {
-  const { username, password, email } = user
+  const { username, firstname, lastname, password, passwordconf, email } = user
   if (!username || (username.length < 3 || username.length > 16)) {
     throw new UserInputError(
       'Invalid username, minimum length 3, maximum length 16.',
     )
   }
 
+  if (!firstname || (firstname.length < 1 || firstname.length > 50)) {
+    throw new UserInputError(
+      'Invalid firstname, minimum length 1, maximum length 50.',
+    )
+  }
+
+  if (!lastname || (lastname.length < 1 || lastname.length > 50)) {
+    throw new UserInputError(
+      'Invalid lastname, minimum length 1, maximum length 50.',
+    )
+  }
+
+  if (password !== passwordconf) {
+    throw new UserInputError(
+      'Passwords doesn\'t match',
+    )
+  }
+
   if (!password || password.length < 8) {
+    throw new UserInputError(
+      'Invalid password, minimum length 8.',
+    )
+  }
+
+  if (!passwordconf || passwordconf.length < 8) {
     throw new UserInputError(
       'Invalid password, minimum length 8.',
     )
@@ -112,8 +136,6 @@ const addNewUser = async (user, client) => {
     password: await bcrypt.hash(user.password, 10),
     searchUsername: user.username.toLowerCase(),
     userInfo: {
-      firstname: '',
-      lastname: '',
       location: '',
       gender: '',
       dateOfBirth: '',
