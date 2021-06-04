@@ -16,7 +16,7 @@ describe('User-api tests', () => {
   beforeEach(async () => {
     const CREATE_USER= gql`
     mutation{
-      addUser(
+      addNewUser(
           username: "juuso23", 
           password: "bigsikret", 
           email: "jeejee@com.fi", 
@@ -31,7 +31,7 @@ describe('User-api tests', () => {
   test('Can create user', async () => {
     const CREATE_USER= gql`
     mutation{
-      addUser(
+      addNewUser(
           username: "heikki123", 
           password: "bigsikret", 
           email: "jeejee@com.fi", 
@@ -40,14 +40,14 @@ describe('User-api tests', () => {
       }
     }
     `
-    const { data: { addUser } } = await mutate({ mutation: CREATE_USER })
-    expect(addUser).toEqual({ username: 'heikki123' })
+    const { data: { addNewUser } } = await mutate({ mutation: CREATE_USER })
+    expect(addNewUser).toEqual({ username: 'heikki123' })
   })
 
   test('User password is encrypted', async () => {
     const CREATE_USER= gql`
     mutation{
-      addUser(
+      addNewUser(
           username: "heikki123", 
           password: "sikret", 
           email: "jeejee@com.fi", 
@@ -56,14 +56,14 @@ describe('User-api tests', () => {
       }
     }
     `
-    const { data: { addUser } } = await mutate({ mutation: CREATE_USER })
-    expect(addUser).not.toEqual({ password: 'sikret' })
+    const { data: { addNewUser } } = await mutate({ mutation: CREATE_USER })
+    expect(addNewUser).not.toEqual({ password: 'sikret' })
   })
 
   test('Can\'t create user with the same username', async () => {
     const CREATE_USER= gql`
     mutation{
-      addUser(
+      addNewUser(
           username: "juuso23", 
           password: "sikret", 
           email: "jeejee@com.fi", 
@@ -72,89 +72,90 @@ describe('User-api tests', () => {
       }
     }
     `
-    const { data: { addUser } } = await mutate({ mutation: CREATE_USER })
-    expect(addUser).toEqual(null)
+    const { data: { addNewUser } } = await mutate({ mutation: CREATE_USER })
+    expect(addNewUser).toEqual(null)
   })
 
-  test('findUser returns user if found', async () => {
+  test('findUserByUsername returns user if found', async () => {
     const FIND_USER = gql`
      query {
-      findUser(username: "juuso23") {
+      findUserByUsername(username: "juuso23") {
         username
       }
      }
     `
 
-    const { data: { findUser } } = await query({ query: FIND_USER })
-    expect(findUser).toEqual({ username: 'juuso23' })
+    const { data: { findUserByUsername } } = await query({ query: FIND_USER })
+    expect(findUserByUsername).toEqual({ username: 'juuso23' })
   })
 
-  test('findUser returns null if not found', async () => {
+  test('findUserByUsername returns null if not found', async () => {
     const FIND_USER = gql`
      query {
-      findUser(username: "kek") {
+      findUserByUsername(username: "kek") {
         id
       }
      }
     `
-    const { data: { findUser } } = await query({ query: FIND_USER })
-    expect(findUser).toEqual(null)
+    const { data: { findUserByUsername } } = await query({ query: FIND_USER })
+    expect(findUserByUsername).toEqual(null)
   })
 
-  test('deleteUser returns deleted user if id exists', async () => {
+  test('deleteUserById returns deleted user if id exists', async () => {
     const FIND_USER = gql`
      query {
-      findUser(username: "juuso23") {
+      findUserByUsername(username: "juuso23") {
         id
         username
       }
      }
     `
 
-    const { data: { findUser } } = await query({ query: FIND_USER })
+    const { data: { findUserByUsername } } = await query({ query: FIND_USER })
 
     const DELETE_USER = gql`
     mutation($id: ID!){
-      deleteUser(id: $id){
+      deleteUserById(id: $id){
         id
         username
       }
     }
     `
 
-    const { data: { deleteUser } } =
-      await mutate({ mutation: DELETE_USER, variables: { id: findUser.id } })
+    const { data: { deleteUserById } } =
+      await mutate(
+        { mutation: DELETE_USER, variables: { id: findUserByUsername.id } })
 
-    expect(deleteUser).toEqual(findUser)
+    expect(deleteUserById).toEqual(findUserByUsername)
   })
 
-  test('deleteUser returns null if id doesn\'t exist', async () => {
+  test('deleteUserById returns null if id doesn\'t exist', async () => {
     const DELETE_USER = gql`
     mutation($id: ID!){
-      deleteUser(id: $id){
+      deleteUserById(id: $id){
         id
         username
       }
     }
     `
 
-    const { data: { deleteUser } } =
+    const { data: { deleteUserById } } =
       await mutate({ mutation: DELETE_USER, variables: { id: 'jokuIdHehe' } })
 
-    expect(deleteUser).toEqual(null)
+    expect(deleteUserById).toEqual(null)
   })
 
   test('updateUserInfo updates info', async () => {
     const FIND_USER = gql`
     query {
-     findUser(username: "juuso23") {
+     findUserByUsername(username: "juuso23") {
        id
        username
      }
     }
    `
 
-    const { data: { findUser } } = await query({ query: FIND_USER })
+    const { data: { findUserByUsername } } = await query({ query: FIND_USER })
 
     const UPDATE_USER_INFO = gql`
     mutation($id: ID!, $firstname: String, $lastname: String){
@@ -176,7 +177,7 @@ describe('User-api tests', () => {
         { mutation: UPDATE_USER_INFO,
           variables:
           {
-            id: findUser.id,
+            id: findUserByUsername.id,
             firstname: 'Juuso',
             lastname: 'Eskelinen',
           },

@@ -15,19 +15,27 @@ const getResolvers = (client = docClient) =>
   (
     {
       Query: {
-        userCount: () => getUserCount(client),
-        allUsers: (_root, _args) => getAllUsers(client),
-        findUser: (_root, args) => findUserByUsername(args.username, client),
-        findUserById: (_root, args) => findUserById(args.id, client),
+        getUserCount: (_root, _args) =>
+          getUserCount(client),
+        getAllUsers: (_root, _args) =>
+          getAllUsers(client),
+        findUserByUsername: (_root, args) =>
+          findUserByUsername(args.username, client),
+        findUserById: (_root, args) =>
+          findUserById(args.id, client),
         currentUser: (_root, _args, context) => {
           return context.currentUser
         },
       },
       Mutation: {
-        addUser: (_root, args) => addNewUser(args, client),
-        deleteUser: (_root, args) => deleteUserById(args.id, client),
-        login: (_root, args) => login(args.username, args.password, client),
-        updateUserInfo: (_root, args) => updateUserInfo(args, client),
+        addNewUser: (_root, args) =>
+          addNewUser(args, client),
+        deleteUserById: (_root, args) =>
+          deleteUserById(args.id, client),
+        login: (_root, args) =>
+          login(args.username, args.password, client),
+        updateUserInfo: (_root, args) =>
+          updateUserInfo(args, client),
       },
     }
   )

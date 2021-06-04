@@ -31,20 +31,20 @@ type UserInfo {
 }
 
 type Query {
-  userCount: Int!
-  allUsers: [User!]!
-  findUser(username: String): User
+  getUserCount: Int!
+  getAllUsers: [User!]!
+  findUserByUsername(username: String): User
   findUserById(id: ID!): User
-  currentUser: User
+  currentUser: User!
 }
 
 type Mutation {
-  addUser(
+  addNewUser(
     username: String!
     password: String!
     email: String!
   ): User
-  deleteUser(
+  deleteUserById(
     id: ID!
   ): User
   login(
