@@ -19,6 +19,9 @@ describe('User-api tests', () => {
       addNewUser(
           username: "juuso23", 
           password: "bigsikret", 
+          passwordconf: "bigsikret",
+          firstname: "Juuso",
+          lastname: "Miettinen",
           email: "jeejee@com.fi", 
         ){
           username
@@ -34,14 +37,24 @@ describe('User-api tests', () => {
       addNewUser(
           username: "heikki123", 
           password: "bigsikret", 
+          passwordconf: "bigsikret",
+          firstname: "Heikki",
+          lastname: "Paasola",
           email: "jeejee@com.fi", 
         ){
+          firstname,
+          lastname,
           username
       }
     }
     `
     const { data: { addNewUser } } = await mutate({ mutation: CREATE_USER })
-    expect(addNewUser).toEqual({ username: 'heikki123' })
+    expect(addNewUser).toEqual(
+      {
+        firstname: 'Heikki',
+        lastname: 'Paasola',
+        username: 'heikki123',
+      })
   })
 
   test('User password is encrypted', async () => {
@@ -49,10 +62,13 @@ describe('User-api tests', () => {
     mutation{
       addNewUser(
           username: "heikki123", 
-          password: "sikret", 
+          password: "bigsikret", 
+          passwordconf: "bigsikret",
+          firstname: "Heikki",
+          lastname: "Paasola",
           email: "jeejee@com.fi", 
         ){
-          password
+          username
       }
     }
     `
@@ -65,7 +81,10 @@ describe('User-api tests', () => {
     mutation{
       addNewUser(
           username: "juuso23", 
-          password: "sikret", 
+          password: "bigsikret", 
+          passwordconf: "bigsikret",
+          firstname: "Juuso",
+          lastname: "Miettinen",
           email: "jeejee@com.fi", 
         ){
           username
@@ -158,15 +177,13 @@ describe('User-api tests', () => {
     const { data: { findUserByUsername } } = await query({ query: FIND_USER })
 
     const UPDATE_USER_INFO = gql`
-    mutation($id: ID!, $firstname: String, $lastname: String){
+    mutation($id: ID!, $gender: String){
       updateUserInfo(
         id: $id,
-        firstname: $firstname,
-        lastname: $lastname
+        gender: $gender
         ){
         userInfo {
-          firstname
-          lastname
+          gender
         }
       }
     }
@@ -178,14 +195,13 @@ describe('User-api tests', () => {
           variables:
           {
             id: findUserByUsername.id,
-            firstname: 'Juuso',
-            lastname: 'Eskelinen',
+            gender: 'Male',
           },
         })
 
     console.log(updateUserInfo)
     expect(updateUserInfo).toEqual(
-      { userInfo: { firstname: 'Juuso', lastname: 'Eskelinen' } })
+      { userInfo: { gender: 'Male' } })
   })
 })
 
