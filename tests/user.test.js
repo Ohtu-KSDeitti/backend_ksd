@@ -12,13 +12,16 @@ const server = new ApolloServer({
 
 const { query, mutate } = createTestClient(server)
 
-describe('User-api tests', () => {
+describe('User-api general tests', () => {
   beforeEach(async () => {
     const CREATE_USER= gql`
     mutation{
       addNewUser(
           username: "juuso23", 
           password: "bigsikret", 
+          passwordconf: "bigsikret",
+          firstname: "Juuso",
+          lastname: "Miettinen",
           email: "jeejee@com.fi", 
         ){
           username
@@ -34,14 +37,24 @@ describe('User-api tests', () => {
       addNewUser(
           username: "heikki123", 
           password: "bigsikret", 
+          passwordconf: "bigsikret",
+          firstname: "Heikki",
+          lastname: "Paasola",
           email: "jeejee@com.fi", 
         ){
+          firstname,
+          lastname,
           username
       }
     }
     `
     const { data: { addNewUser } } = await mutate({ mutation: CREATE_USER })
-    expect(addNewUser).toEqual({ username: 'heikki123' })
+    expect(addNewUser).toEqual(
+      {
+        firstname: 'Heikki',
+        lastname: 'Paasola',
+        username: 'heikki123',
+      })
   })
 
   test('User password is encrypted', async () => {
@@ -49,7 +62,10 @@ describe('User-api tests', () => {
     mutation{
       addNewUser(
           username: "heikki123", 
-          password: "sikret", 
+          password: "bigsikret", 
+          passwordconf: "bigsikret",
+          firstname: "Heikki",
+          lastname: "Paasola",
           email: "jeejee@com.fi", 
         ){
           password
@@ -57,7 +73,7 @@ describe('User-api tests', () => {
     }
     `
     const { data: { addNewUser } } = await mutate({ mutation: CREATE_USER })
-    expect(addNewUser).not.toEqual({ password: 'sikret' })
+    expect(addNewUser.password).not.toEqual({ password: 'sikret' })
   })
 
   test('Can\'t create user with the same username', async () => {
@@ -65,7 +81,10 @@ describe('User-api tests', () => {
     mutation{
       addNewUser(
           username: "juuso23", 
-          password: "sikret", 
+          password: "bigsikret", 
+          passwordconf: "bigsikret",
+          firstname: "Juuso",
+          lastname: "Miettinen",
           email: "jeejee@com.fi", 
         ){
           username
@@ -158,15 +177,13 @@ describe('User-api tests', () => {
     const { data: { findUserByUsername } } = await query({ query: FIND_USER })
 
     const UPDATE_USER_INFO = gql`
-    mutation($id: ID!, $firstname: String, $lastname: String){
+    mutation($id: ID!, $gender: String){
       updateUserInfo(
         id: $id,
-        firstname: $firstname,
-        lastname: $lastname
+        gender: $gender
         ){
         userInfo {
-          firstname
-          lastname
+          gender
         }
       }
     }
@@ -178,15 +195,213 @@ describe('User-api tests', () => {
           variables:
           {
             id: findUserByUsername.id,
-            firstname: 'Juuso',
-            lastname: 'Eskelinen',
+            gender: 'Male',
           },
         })
 
-    console.log(updateUserInfo)
     expect(updateUserInfo).toEqual(
-      { userInfo: { firstname: 'Juuso', lastname: 'Eskelinen' } })
+      { userInfo: { gender: 'Male' } })
   })
 })
 
+describe('User-api addUser validation tests', () => {
+  test('Can\'t create user with too short (< 2) username', async () => {
+    const CREATE_USER= gql`
+    mutation{
+      addNewUser(
+          username: "j", 
+          password: "bigsikret", 
+          passwordconf: "bigsikret",
+          firstname: "Juuso",
+          lastname: "Miettinen",
+          email: "jeejee@com.fi", 
+        ){
+          username
+      }
+    }
+    `
+    const { data: { addNewUser } } = await mutate({ mutation: CREATE_USER })
+    expect(addNewUser).toEqual(null)
+  })
+  test('Can\'t create user with too long (> 16) username', async () => {
+    const CREATE_USER= gql`
+    mutation{
+      addNewUser(
+          username: "jotainliianpitkaa", 
+          password: "bigsikret", 
+          passwordconf: "bigsikret",
+          firstname: "Juuso",
+          lastname: "Miettinen",
+          email: "jeejee@com.fi", 
+        ){
+          username
+      }
+    }
+    `
+    const { data: { addNewUser } } = await mutate({ mutation: CREATE_USER })
+    expect(addNewUser).toEqual(null)
+  })
+  test('Can\'t create user with too long (> 50) firstname', async () => {
+    const CREATE_USER= gql`
+    mutation{
+      addNewUser(
+          username: "jotainliianpitkaa", 
+          password: "bigsikret", 
+          passwordconf: "bigsikret",
+          firstname: "JuusoJuusoJuusoJuusoJuusoJuusoJuusoJuusoJuusoJuuso1",
+          lastname: "Miettinen",
+          email: "jeejee@com.fi", 
+        ){
+          username
+      }
+    }
+    `
+    const { data: { addNewUser } } = await mutate({ mutation: CREATE_USER })
+    expect(addNewUser).toEqual(null)
+  })
+  test('Can\'t create user without firstname', async () => {
+    const CREATE_USER= gql`
+    mutation{
+      addNewUser(
+          username: "Mitalisti", 
+          password: "bigsikret", 
+          passwordconf: "bigsikret",
+          firstname: "",
+          lastname: "Miettinen",
+          email: "jeejee@com.fi", 
+        ){
+          username
+      }
+    }
+    `
+    const { data: { addNewUser } } = await mutate({ mutation: CREATE_USER })
+    expect(addNewUser).toEqual(null)
+  })
+  test('Can\'t create user without lastname', async () => {
+    const CREATE_USER= gql`
+    mutation{
+      addNewUser(
+          username: "KovaKoo", 
+          password: "bigsikret", 
+          passwordconf: "bigsikret",
+          firstname: "Kyösti",
+          lastname: "",
+          email: "jeejee@com.fi", 
+        ){
+          username
+      }
+    }
+    `
+    const { data: { addNewUser } } = await mutate({ mutation: CREATE_USER })
+    expect(addNewUser).toEqual(null)
+  })
+  test('Can\'t create user with too long (> 50) lastname', async () => {
+    const CREATE_USER= gql`
+    mutation{
+      addNewUser(
+          username: "Jugi", 
+          password: "bigsikret", 
+          passwordconf: "bigsikret",
+          firstname: "Jugi",
+          lastname: "JuusoJuusoJuusoJuusoJuusoJuusoJuusoJuusoJuusoJuuso1",
+          email: "jeejee@com.fi", 
+        ){
+          username
+      }
+    }
+    `
+    const { data: { addNewUser } } = await mutate({ mutation: CREATE_USER })
+    expect(addNewUser).toEqual(null)
+  })
+  test('Can\'t create user if password do not match passwordconf', async () => {
+    const CREATE_USER= gql`
+    mutation{
+      addNewUser(
+          username: "Jugi", 
+          password: "bigsikret", 
+          passwordconf: "bigsikretti",
+          firstname: "Jugi",
+          lastname: "Karhu",
+          email: "jeejee@com.fi", 
+        ){
+          username
+      }
+    }
+    `
+    const { data: { addNewUser } } = await mutate({ mutation: CREATE_USER })
+    expect(addNewUser).toEqual(null)
+  })
+  test('Can\'t create user if password+conf too short (< 8)', async () => {
+    const CREATE_USER= gql`
+    mutation{
+      addNewUser(
+          username: "Jugi", 
+          password: "big", 
+          passwordconf: "big",
+          firstname: "Jugi",
+          lastname: "Karhu",
+          email: "jeejee@com.fi", 
+        ){
+          username
+      }
+    }
+    `
+    const { data: { addNewUser } } = await mutate({ mutation: CREATE_USER })
+    expect(addNewUser).toEqual(null)
+  })
+  test('Can\'t create user without password', async () => {
+    const CREATE_USER= gql`
+    mutation{
+      addNewUser(
+          username: "Jugi", 
+          password: "", 
+          passwordconf: "tosisalainen2",
+          firstname: "Jugi",
+          lastname: "Karhu",
+          email: "jeejee@com.fi", 
+        ){
+          username
+      }
+    }
+    `
+    const { data: { addNewUser } } = await mutate({ mutation: CREATE_USER })
+    expect(addNewUser).toEqual(null)
+  })
+  test('Can\'t create user without passwordconf', async () => {
+    const CREATE_USER= gql`
+    mutation{
+      addNewUser(
+          username: "Jugi", 
+          password: "tosisalaistatie", 
+          passwordconf: "",
+          firstname: "Jugi",
+          lastname: "Karhu",
+          email: "jeejee@com.fi", 
+        ){
+          username
+      }
+    }
+    `
+    const { data: { addNewUser } } = await mutate({ mutation: CREATE_USER })
+    expect(addNewUser).toEqual(null)
+  })
 
+  test('Can\'t create user with invalid email', async () => {
+    const CREATE_USER= gql`
+    mutation{
+      addNewUser(
+          username: "juuso23", 
+          password: "bigsikret", 
+          passwordconf: "bigsikret",
+          firstname: "Juuso",
+          lastname: "Miettinen",
+          email: "enannamitäänposteja", 
+        ){
+          username
+      }
+    }
+    `
+    const { data: { addNewUser } } = await mutate({ mutation: CREATE_USER })
+    expect(addNewUser).toEqual(null)
+  })
+})

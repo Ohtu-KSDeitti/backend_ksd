@@ -78,16 +78,21 @@ const findUserById = (id, client) => {
 }
 
 const addNewUser = async (user, client) => {
-  const { username, password, email } = user
+  const { username, firstname, lastname, password, passwordconf, email } = user
   if (!username || (username.length < 3 || username.length > 16)) {
     throw new UserInputError(
       'Invalid username, minimum length 3, maximum length 16.',
     )
   }
+  parseString(username, 3, 16, true)
+  parseString(firstname, 1, 50, true)
+  parseString(lastname, 1, 50, true)
+  parseString(password, 8)
+  parseString(passwordconf, 8)
 
-  if (!password || password.length < 8) {
+  if (password !== passwordconf) {
     throw new UserInputError(
-      'Invalid password, minimum length 8.',
+      'Passwords doesn\'t match',
     )
   }
 
@@ -112,8 +117,6 @@ const addNewUser = async (user, client) => {
     password: await bcrypt.hash(user.password, 10),
     searchUsername: user.username.toLowerCase(),
     userInfo: {
-      firstname: '',
-      lastname: '',
       location: '',
       gender: '',
       dateOfBirth: '',
@@ -149,6 +152,29 @@ const deleteUserById = (id, client) => {
     .delete(params)
     .promise()
     .then(() => user)
+}
+
+
+const parseString = (str, min, max = 99, unicode = false) => {
+  const length = str.length
+
+  if (unicode) {
+    if (hasUnicodeChar(str)) {
+      throw new UserInputError(
+        `Invalid ${str}, contains unicode charachters.`,
+      )
+    }
+  }
+
+  if (length < min || length > max) {
+    throw new UserInputError(
+      `Invalid ${str}, minimum length ${min}, maximum length ${max}.`,
+    )
+  }
+}
+
+const hasUnicodeChar = (str) => {
+  return /\W+/.test(str)
 }
 
 const updateUserInfo = async (userInfo, client) => {
