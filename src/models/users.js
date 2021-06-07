@@ -84,34 +84,15 @@ const addNewUser = async (user, client) => {
       'Invalid username, minimum length 3, maximum length 16.',
     )
   }
-
-  if (!firstname || (firstname.length < 1 || firstname.length > 50)) {
-    throw new UserInputError(
-      'Invalid firstname, minimum length 1, maximum length 50.',
-    )
-  }
-
-  if (!lastname || (lastname.length < 1 || lastname.length > 50)) {
-    throw new UserInputError(
-      'Invalid lastname, minimum length 1, maximum length 50.',
-    )
-  }
+  parseString(username, 3, 16, true)
+  parseString(firstname, 1, 50, true)
+  parseString(lastname, 1, 50, true)
+  parseString(password, 8)
+  parseString(passwordconf, 8)
 
   if (password !== passwordconf) {
     throw new UserInputError(
       'Passwords doesn\'t match',
-    )
-  }
-
-  if (!password || password.length < 8) {
-    throw new UserInputError(
-      'Invalid password, minimum length 8.',
-    )
-  }
-
-  if (!passwordconf || passwordconf.length < 8) {
-    throw new UserInputError(
-      'Invalid password, minimum length 8.',
     )
   }
 
@@ -171,6 +152,29 @@ const deleteUserById = (id, client) => {
     .delete(params)
     .promise()
     .then(() => user)
+}
+
+
+const parseString = (str, min, max = 99, unicode = false) => {
+  const length = str.length
+
+  if (unicode) {
+    if (hasUnicodeChar(str)) {
+      throw new UserInputError(
+        `Invalid ${str}, contains unicode charachters.`,
+      )
+    }
+  }
+
+  if (length < min || length > max) {
+    throw new UserInputError(
+      `Invalid ${str}, minimum length ${min}, maximum length ${max}.`,
+    )
+  }
+}
+
+const hasUnicodeChar = (str) => {
+  return /\W+/.test(str)
 }
 
 const updateUserInfo = async (userInfo, client) => {

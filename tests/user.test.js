@@ -68,12 +68,12 @@ describe('User-api general tests', () => {
           lastname: "Paasola",
           email: "jeejee@com.fi", 
         ){
-          username
+          password
       }
     }
     `
     const { data: { addNewUser } } = await mutate({ mutation: CREATE_USER })
-    expect(addNewUser).not.toEqual({ password: 'sikret' })
+    expect(addNewUser.password).not.toEqual({ password: 'sikret' })
   })
 
   test('Can\'t create user with the same username', async () => {
@@ -199,13 +199,12 @@ describe('User-api general tests', () => {
           },
         })
 
-    console.log(updateUserInfo)
     expect(updateUserInfo).toEqual(
       { userInfo: { gender: 'Male' } })
   })
 })
 
-describe('User-api addUser validation tests', async () => {
+describe('User-api addUser validation tests', () => {
   test('Can\'t create user with too short (< 2) username', async () => {
     const CREATE_USER= gql`
     mutation{
