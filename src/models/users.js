@@ -1,7 +1,7 @@
-
 const { v4: uuidv4 } = require('uuid')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
+const { parseString } = require('../utils')
 const { TABLENAME } = require('../config/dynamodb_config')
 const { UserInputError, AuthenticationError } = require('apollo-server')
 
@@ -113,7 +113,10 @@ const addNewUser = async (user, client) => {
 
   const newUser = {
     id: uuidv4(),
-    ...user,
+    username: user.username,
+    firstname: user.firstname,
+    lastname: user.lastname,
+    email: user.email,
     password: await bcrypt.hash(user.password, 10),
     searchUsername: user.username.toLowerCase(),
     userInfo: {
@@ -154,39 +157,18 @@ const deleteUserById = (id, client) => {
     .then(() => user)
 }
 
-
-const parseString = (str, min, max = 99, unicode = false) => {
-  const length = str.length
-
-  if (unicode) {
-    if (hasUnicodeChar(str)) {
-      throw new UserInputError(
-        `Invalid ${str}, contains unicode charachters.`,
-      )
-    }
-  }
-
-  if (length < min || length > max) {
-    throw new UserInputError(
-      `Invalid ${str}, minimum length ${min}, maximum length ${max}.`,
-    )
-  }
-}
-
-const hasUnicodeChar = (str) => {
-  return /\W+/.test(str)
-}
-
 const updateUserInfo = async (userInfo, client) => {
   const user = await findUserById(userInfo.id, client)
+
+  if (!user) {
+    throw new AuthenticationError('User not ')
+  }
   const oldInfo = user.userInfo
 
   const isNull = (oldValue, newValue) =>
     (newValue) ? newValue : (oldValue) ? oldValue : null
 
   const newUserInfo = {
-    firstname: isNull(oldInfo.firstname, userInfo.firstname),
-    lastname: isNull(oldInfo.lastname, userInfo.lastname),
     location: isNull(oldInfo.location, userInfo.location),
     gender: isNull(oldInfo.gender, userInfo.gender),
     dateOfBirth: isNull(oldInfo.dateOfBirth, userInfo.dateOfBirth),
