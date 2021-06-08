@@ -29,11 +29,11 @@ const hasUnicodeChar = (str) => {
 }
 
 
-const encrypt = (str) => {
+const encrypt = (str, key = JWT_SECRET) => {
   const iv = crypto.randomBytes(16)
   const cipher = crypto.createCipheriv(
     'aes-256-cbc',
-    Buffer.from(JWT_SECRET),
+    Buffer.from(key),
     iv)
 
   let encrypted = cipher.update(str)
@@ -41,12 +41,12 @@ const encrypt = (str) => {
   return iv.toString('hex') + ':' + encrypted.toString('hex')
 }
 
-const decrypt = (str) => {
+const decrypt = (str, key = JWT_SECRET) => {
   const text = str.split(':')
   const iv = Buffer.from(text.shift(), 'hex')
   const encryptedText = Buffer.from(text.join(':'), 'hex')
   const decipher =
-    crypto.createDecipheriv('aes-256-cbc', Buffer.from(JWT_SECRET), iv)
+    crypto.createDecipheriv('aes-256-cbc', Buffer.from(key), iv)
   let decrypted = decipher.update(encryptedText)
 
   decrypted = Buffer.concat([decrypted, decipher.final()])

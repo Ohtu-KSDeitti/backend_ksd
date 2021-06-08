@@ -32,13 +32,13 @@ describe('Testing parseString function (that checks regex of words)', () => {
 
   test('Text is decrypted properly', () => {
     const str = 'Tosisalaista'
-    const text = encrypt(str)
+    const text = encrypt(str, 'RVh8MfVcCXM2bZdNUkuXymx5JENC4jxc')
     expect(text).not.toBe(str)
   })
 
   test('Text is decrypted and encrypted properly', () => {
     const str = 'Tosisalaista'
-    const text = encrypt(str)
-    expect(decrypt(text)).toBe(str)
+    const text = encrypt(str, 'RVh8MfVcCXM2bZdNUkuXymx5JENC4jxc')
+    expect(decrypt(text, 'RVh8MfVcCXM2bZdNUkuXymx5JENC4jxc')).toBe(str)
   })
 })
