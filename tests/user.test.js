@@ -404,4 +404,41 @@ describe('User-api addUser validation tests', () => {
     const { data: { addNewUser } } = await mutate({ mutation: CREATE_USER })
     expect(addNewUser).toEqual(null)
   })
+  test('Can\'t create user with an emoji in username', async () => {
+    const CREATE_USER= gql`
+    mutation{
+      addNewUser(
+          username: "juuso23😰", 
+          password: "bigsikret", 
+          passwordconf: "bigsikret",
+          firstname: "Juuso",
+          lastname: "Miettinen",
+          email: "enannam@gmail.com"
+        ){
+          username
+      }
+    }
+    `
+    const { data: { addNewUser } } = await mutate({ mutation: CREATE_USER })
+    expect(addNewUser).toEqual(null)
+  })
+
+  test('Can\'t create user with spaces in username', async () => {
+    const CREATE_USER= gql`
+    mutation{
+      addNewUser(
+          username: "juuso23 rulz", 
+          password: "bigsikret", 
+          passwordconf: "bigsikret",
+          firstname: "Juuso",
+          lastname: "Miettinen",
+          email: "enannam@gmail.com"
+        ){
+          username
+      }
+    }
+    `
+    const { data: { addNewUser } } = await mutate({ mutation: CREATE_USER })
+    expect(addNewUser).toEqual(null)
+  })
 })
