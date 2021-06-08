@@ -54,6 +54,13 @@ type Mutation {
     username: String!
     password: String!
   ): Token
+  updateUserAccount(
+    id: String
+    username: String
+    firstname: String
+    lastname: String
+    email: String
+  ): Boolean
   updateUserInfo(
     id: ID!
     location: String
@@ -61,7 +68,7 @@ type Mutation {
     dateOfBirth: String
     bio: String
     tags: [String]
-  ): User
+  ): Boolean
 }
 `
 

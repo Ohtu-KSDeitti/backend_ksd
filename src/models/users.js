@@ -157,26 +157,50 @@ const deleteUserById = (id, client) => {
     .then(() => user)
 }
 
+const updateUserAccount = async (user, client) => {
+  const username = user.username
+  const firstname = user.firstname
+  const lastname = user.lastname
+  const email = user.email
+
+  const params = {
+    TableName: TABLENAME,
+    Key: {
+      'id': user.id,
+    },
+    UpdateExpression: `set #username = :username,
+    #firstname = :firstname, #lastname = :lastname, #email = :email`,
+    ExpressionAttributeNames:
+    {
+      '#username': 'username',
+      '#firstname': 'firstname',
+      '#lastname': 'lastname',
+      '#email': 'email',
+    },
+    ExpressionAttributeValues:
+    {
+      ':username': username,
+      ':firstname': firstname,
+      ':lastname': lastname,
+      ':email': email,
+    },
+  }
+
+  return client
+    .update(params)
+    .promise()
+    .then(() => true)
+    .catch(() => false)
+}
+
 const updateUserInfo = async (userInfo, client) => {
-  const user = await findUserById(userInfo.id, client)
-
-  if (!user) {
-    throw new AuthenticationError('User not ')
-  }
-  const oldInfo = user.userInfo
-
-  const isNull = (oldValue, newValue) =>
-    (newValue) ? newValue : (oldValue) ? oldValue : null
-
   const newUserInfo = {
-    location: isNull(oldInfo.location, userInfo.location),
-    gender: isNull(oldInfo.gender, userInfo.gender),
-    dateOfBirth: isNull(oldInfo.dateOfBirth, userInfo.dateOfBirth),
-    bio: isNull(oldInfo.bio, userInfo.bio),
-    tags: isNull(oldInfo.tags, userInfo.tags),
+    location: userInfo.location,
+    gender: userInfo.gender,
+    dateOfBirth: userInfo.dateOfBirth,
+    bio: userInfo.bio,
+    tags: userInfo.tags,
   }
-
-  user.userInfo = newUserInfo
 
   const params = {
     TableName: TABLENAME,
@@ -192,8 +216,8 @@ const updateUserInfo = async (userInfo, client) => {
   return client
     .update(params)
     .promise()
-    .then(() => user)
-    .catch((err) => console.log(err))
+    .then(() => true)
+    .catch(() => false)
 }
 
 module.exports = {
@@ -205,4 +229,5 @@ module.exports = {
   addNewUser,
   deleteUserById,
   updateUserInfo,
+  updateUserAccount,
 }
