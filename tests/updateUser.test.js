@@ -109,7 +109,6 @@ describe('updateUser tests', () => {
             email: 'jeejee@com.fi',
           },
         })
-
     expect(updateUserAccount).toEqual(true)
   })
 })
