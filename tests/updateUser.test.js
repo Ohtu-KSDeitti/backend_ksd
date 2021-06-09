@@ -46,25 +46,56 @@ describe('updateUser tests', () => {
     const { data: { findUserByUsername } } = await query({ query: FIND_USER })
 
     const UPDATE_USER_INFO = gql`
-    mutation($id: ID!, $gender: String){
+    mutation($id: ID!, 
+      $dateOfBirth: String,
+      $gender: Gender,
+      $status: Status,
+      $location: String,
+      $bio: String,
+      $tags: [String]){
       updateUserInfo(
         id: $id,
         gender: $gender
-        )
+        status: $status
+        dateOfBirth: $dateOfBirth
+        location: $location
+        bio: $bio
+        tags: $tags
+        ){
+          gender
+          location
+          dateOfBirth
+          status
+          bio
+          tags
+        }
     }
     `
+
+    const expected = {
+      gender: 'MALE',
+      location: 'Pori',
+      dateOfBirth: null,
+      status: 'SINGLE',
+      bio: null,
+      tags: [],
+    }
 
     const { data: { updateUserInfo } } =
       await mutate(
         { mutation: UPDATE_USER_INFO,
-          variables:
-          {
+          variables: {
             id: findUserByUsername.id,
-            gender: 'Male',
+            gender: 'MALE',
+            location: 'Pori',
+            dateOfBirth: null,
+            status: 'SINGLE',
+            bio: null,
+            tags: [],
           },
         })
 
-    expect(updateUserInfo).toEqual(true)
+    expect(updateUserInfo).toEqual(expected)
   })
 
   test('updateUserAccount updates account info', async () => {
@@ -74,7 +105,6 @@ describe('updateUser tests', () => {
        username: "juuso23"
        ){
        id
-       username
      }
     }
    `
@@ -93,22 +123,30 @@ describe('updateUser tests', () => {
         firstname: $firstname
         lastname: $lastname
         email: $email
-        )
+        ){
+          id
+          username
+          firstname
+          lastname
+          email
+        }
     }
     `
+
+    const expected = {
+      id: findUserByUsername.id,
+      username: 'juuso23',
+      firstname: 'Jooseppi',
+      lastname: 'Miettinen',
+      email: 'jeejee@com.fi',
+    }
 
     const { data: { updateUserAccount } } =
       await mutate(
         { mutation: UPDATE_USER_ACCOUNT,
-          variables:
-          {
-            id: findUserByUsername.id,
-            username: 'juuso23',
-            firstname: 'Jooseppi',
-            lastname: 'Miettinen',
-            email: 'jeejee@com.fi',
-          },
+          variables: { ...expected },
         })
-    expect(updateUserAccount).toEqual(true)
+
+    expect(updateUserAccount).toEqual(expected)
   })
 })

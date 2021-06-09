@@ -4,6 +4,7 @@ const crypto = require('crypto')
 require('dotenv').config()
 
 const JWT_SECRET = process.env.SECRET_KEY
+const ENV = process.env.NODE_ENV
 
 const parseString = (str, min, max = 99, unicode = false) => {
   const length = str.length
@@ -39,6 +40,16 @@ const parseEmail = (str) => {
 }
 
 const encrypt = (str, key = JWT_SECRET) => {
+  if (!str) {
+    return ''
+  }
+  if (str.length === 0 || str === '') {
+    return ''
+  }
+  if (ENV === 'test') {
+    key = 'RVh8MfVcCXM2bZdNUkuXymx5JENC4jxc'
+  }
+
   const iv = crypto.randomBytes(16)
   const cipher = crypto.createCipheriv(
     'aes-256-cbc',
@@ -51,6 +62,16 @@ const encrypt = (str, key = JWT_SECRET) => {
 }
 
 const decrypt = (str, key = JWT_SECRET) => {
+  if (!str) {
+    return ''
+  }
+  if (str.length === 0 || str === '') {
+    return ''
+  }
+  if (ENV === 'test') {
+    key = 'RVh8MfVcCXM2bZdNUkuXymx5JENC4jxc'
+  }
+
   const text = str.split(':')
   const iv = Buffer.from(text.shift(), 'hex')
   const encryptedText = Buffer.from(text.join(':'), 'hex')

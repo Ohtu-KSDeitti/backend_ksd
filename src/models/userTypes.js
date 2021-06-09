@@ -21,9 +21,23 @@ type Token {
    value: String
 }
 
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum Status {
+  SINGLE
+  DIVORCED
+  MARRIED
+  WIDOWED
+  TAKEN
+}
+
 type UserInfo {
   location: String
-  gender: String
+  status: Status
+  gender: Gender
   dateOfBirth: String
   profileLikes: Int
   bio: String
@@ -60,15 +74,16 @@ type Mutation {
     firstname: String
     lastname: String
     email: String
-  ): Boolean
+  ): User
   updateUserInfo(
     id: ID!
     location: String
-    gender: String
+    status: Status
+    gender: Gender
     dateOfBirth: String
     bio: String
     tags: [String]
-  ): Boolean
+  ): UserInfo
 }
 `
 
