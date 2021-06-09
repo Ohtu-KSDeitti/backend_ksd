@@ -36,8 +36,8 @@ enum Status {
 
 type UserInfo {
   location: String
-  status: String
-  gender: String
+  status: Status
+  gender: Gender
   dateOfBirth: String
   profileLikes: Int
   bio: String
@@ -78,8 +78,8 @@ type Mutation {
   updateUserInfo(
     id: ID!
     location: String
-    status: String
-    gender: String
+    status: Status
+    gender: Gender
     dateOfBirth: String
     bio: String
     tags: [String]
