@@ -12,6 +12,25 @@ const server = new ApolloServer({
 
 const { query, mutate } = createTestClient(server)
 
+/*
+   testauksesta:
+
+   Ainakin semmoset testit updateUserInfo / updateUserAccount mutaatioille, että
+   muutetaan käyttäjän asetuksia ->
+      haetaan käyttäjän tiedot ->
+        verrataan niitä asetettuihin
+
+  kun nyt vaan testataan, että kun muutetaan niin palautetaan true.
+
+  validointi:
+
+  Nyt ei myöskään validoita updateUserInfo-metodia, ja tein
+  updateUserAccount "jotkut" validoinnit, että niitäkin voisi miettiä.
+  eli esim minkä pituiset merkkijonot jne, miten tagit validoiaan jne.
+
+  ps. poista tämä viesti :D
+*/
+
 describe('updateUser tests', () => {
   beforeEach(async () => {
     const CREATE_USER= gql`
@@ -46,10 +65,19 @@ describe('updateUser tests', () => {
     const { data: { findUserByUsername } } = await query({ query: FIND_USER })
 
     const UPDATE_USER_INFO = gql`
-    mutation($id: ID!, $gender: String){
+    mutation($id: ID!, 
+      $dateOfBirth: String,
+      $gender: String,
+      $location: String,
+      $bio: String,
+      $tags: [String]){
       updateUserInfo(
         id: $id,
         gender: $gender
+        dateOfBirth: $dateOfBirth
+        location: $location
+        bio: $bio
+        tags: $tags
         )
     }
     `
@@ -61,6 +89,10 @@ describe('updateUser tests', () => {
           {
             id: findUserByUsername.id,
             gender: 'Male',
+            location: 'Pori',
+            dateOfBirth: '',
+            bio: '',
+            tags: [],
           },
         })
 
