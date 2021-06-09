@@ -14,12 +14,14 @@ const permissions = shield({
     findUserByUsername: isAuthenticated,
     currentUser: isAuthenticated,
     getAllUsers: isAuthenticated,
+    getUserCount: isAuthenticated,
   },
   Mutation: {
     login: not(isAuthenticated),
     addNewUser: not(isAuthenticated),
     deleteUserById: and(isAuthenticated, isReadingOwnAccount),
     updateUserInfo: and(isAuthenticated, isReadingOwnAccount),
+    updateUserAccount: and(isAuthenticated, isReadingOwnAccount),
   },
 })
 
