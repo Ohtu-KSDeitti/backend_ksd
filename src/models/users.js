@@ -46,8 +46,6 @@ const getAllUsers = (client) => {
         user.userInfo.dateOfBirth = decrypt(user.userInfo.dateOfBirth)
         return user
       })
-    }).catch((err) => {
-      console.log(err.message)
     })
 }
 
