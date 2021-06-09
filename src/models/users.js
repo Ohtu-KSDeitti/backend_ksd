@@ -1,6 +1,7 @@
 const { v4: uuidv4 } = require('uuid')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
+const { docClient } = require('../config/dynamodb_config')
 const { parseString, parseEmail, encrypt, decrypt } = require('../utils')
 const { TABLENAME } = require('../config/dynamodb_config')
 const { UserInputError, AuthenticationError } = require('apollo-server')
@@ -8,12 +9,8 @@ const { UserInputError, AuthenticationError } = require('apollo-server')
 require('dotenv').config()
 const JWT_SECRET = process.env.SECRET_KEY
 
-const login = async (username, password, client) => {
-  const user = await findUserByUsername(
-    username,
-    client,
-    { currentUser: 'none' },
-  )
+const login = async (username, password) => {
+  const user = await findUserByUsername(username)
 
   if (!user) {
     throw new AuthenticationError('Invalid username or password')
@@ -33,7 +30,7 @@ const login = async (username, password, client) => {
   return { value: jwt.sign(userForToken, JWT_SECRET, { expiresIn: 900 }) }
 }
 
-const getAllUsers = (client) => {
+const getAllUsers = (client = docClient) => {
   return client
     .scan({ TableName: TABLENAME })
     .promise()
@@ -49,14 +46,14 @@ const getAllUsers = (client) => {
     })
 }
 
-const getUserCount = (client) => {
+const getUserCount = (client = docClient) => {
   return client
     .scan({ TableName: TABLENAME })
     .promise()
     .then((data) => data.Count)
 }
 
-const findUserByUsername = (username, client) => {
+const findUserByUsername = (username, client = docClient) => {
   const params = {
     TableName: TABLENAME,
     FilterExpression: '#searchUsername = :searchUsername',
@@ -84,7 +81,7 @@ const findUserByUsername = (username, client) => {
     })
 }
 
-const findUserById = (id, client) => {
+const findUserById = (id, client = docClient) => {
   const params = {
     TableName: TABLENAME,
     Key: {
@@ -108,7 +105,7 @@ const findUserById = (id, client) => {
     })
 }
 
-const addNewUser = async (user, client) => {
+const addNewUser = async (user, client = docClient) => {
   const { username, firstname, lastname, password, passwordconf, email } = user
   parseString(username, 3, 16, true)
   parseString(firstname, 1, 50, true)
@@ -124,7 +121,7 @@ const addNewUser = async (user, client) => {
   }
 
   const doesExist =
-    await findUserByUsername(username, client)
+    await findUserByUsername(username)
 
   if (doesExist) {
     return null
@@ -140,7 +137,8 @@ const addNewUser = async (user, client) => {
     searchUsername: user.username.toLowerCase(),
     userInfo: {
       location: '',
-      gender: '',
+      gender: null,
+      status: null,
       dateOfBirth: '',
       profileLikes: 0,
       bio: '',
@@ -167,7 +165,7 @@ const addNewUser = async (user, client) => {
     .then(() => returnUser)
 }
 
-const deleteUserById = async (id, client) => {
+const deleteUserById = async (id, client = docClient) => {
   const params = {
     TableName: TABLENAME,
     Key: {
@@ -175,7 +173,7 @@ const deleteUserById = async (id, client) => {
     },
   }
 
-  const user = await findUserById(id, client)
+  const user = await findUserById(id, client = docClient)
 
   return client
     .delete(params)
@@ -183,13 +181,13 @@ const deleteUserById = async (id, client) => {
     .then(() => user)
 }
 
-const updateUserAccount = (user, client) => {
+const updateUserAccount = (user, client = docClient) => {
   const username = user.username
   const firstname = user.firstname
   const lastname = user.lastname
   const email = user.email
 
-  const oldUser = findUserById(user.id, client)
+  const oldUser = findUserById(user.id)
 
   if (!oldUser) {
     throw new Error({ message: 'User not found' })
@@ -229,8 +227,16 @@ const updateUserAccount = (user, client) => {
     .then(() => user)
 }
 
-const updateUserInfo = (userInfo, client) => {
+const updateUserInfo = (userInfo, client = docClient) => {
   const { location, gender, dateOfBirth, bio, tags, status } = userInfo
+
+  if (bio) {
+    if (bio.length > 150) {
+      throw new UserInputError(
+        'Bio has too many charachters, max 150.',
+      )
+    }
+  }
 
   const newUserInfo = {
     location: encrypt(location),
