@@ -28,7 +28,9 @@ const { query, mutate } = createTestClient(server)
   updateUserAccount "jotkut" validoinnit, että niitäkin voisi miettiä.
   eli esim minkä pituiset merkkijonot jne, miten tagit validoiaan jne.
 
-  ps. poista tämä viesti :D
+  updateUserInfoon siviilisääty: status
+
+  ps. poista tämä viesti :D, okei :D
 */
 
 describe('updateUser tests', () => {
@@ -68,35 +70,53 @@ describe('updateUser tests', () => {
     mutation($id: ID!, 
       $dateOfBirth: String,
       $gender: String,
+      $status: String,
       $location: String,
       $bio: String,
       $tags: [String]){
       updateUserInfo(
         id: $id,
         gender: $gender
+        status: $status
         dateOfBirth: $dateOfBirth
         location: $location
         bio: $bio
         tags: $tags
-        )
+        ){
+          gender
+          location
+          dateOfBirth
+          status
+          bio
+          tags
+        }
     }
     `
+
+    const expected = {
+      gender: 'MALE',
+      location: 'Pori',
+      dateOfBirth: null,
+      status: 'SINGLE',
+      bio: null,
+      tags: [],
+    }
 
     const { data: { updateUserInfo } } =
       await mutate(
         { mutation: UPDATE_USER_INFO,
-          variables:
-          {
+          variables: {
             id: findUserByUsername.id,
-            gender: 'Male',
+            gender: 'MALE',
             location: 'Pori',
-            dateOfBirth: '',
-            bio: '',
+            dateOfBirth: null,
+            status: 'SINGLE',
+            bio: null,
             tags: [],
           },
         })
 
-    expect(updateUserInfo).toEqual(true)
+    expect(updateUserInfo).toEqual(expected)
   })
 
   test('updateUserAccount updates account info', async () => {
@@ -106,7 +126,6 @@ describe('updateUser tests', () => {
        username: "juuso23"
        ){
        id
-       username
      }
     }
    `
@@ -125,22 +144,30 @@ describe('updateUser tests', () => {
         firstname: $firstname
         lastname: $lastname
         email: $email
-        )
+        ){
+          id
+          username
+          firstname
+          lastname
+          email
+        }
     }
     `
+
+    const expected = {
+      id: findUserByUsername.id,
+      username: 'juuso23',
+      firstname: 'Jooseppi',
+      lastname: 'Miettinen',
+      email: 'jeejee@com.fi',
+    }
 
     const { data: { updateUserAccount } } =
       await mutate(
         { mutation: UPDATE_USER_ACCOUNT,
-          variables:
-          {
-            id: findUserByUsername.id,
-            username: 'juuso23',
-            firstname: 'Jooseppi',
-            lastname: 'Miettinen',
-            email: 'jeejee@com.fi',
-          },
+          variables: { ...expected },
         })
-    expect(updateUserAccount).toEqual(true)
+
+    expect(updateUserAccount).toEqual(expected)
   })
 })

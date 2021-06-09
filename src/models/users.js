@@ -189,6 +189,12 @@ const updateUserAccount = (user, client) => {
   const lastname = user.lastname
   const email = user.email
 
+  const oldUser = findUserById(user.id, client)
+
+  if (!oldUser) {
+    throw new Error({ message: 'User not found' })
+  }
+
   parseString(username, 3, 16, true)
   parseString(firstname, 1, 50, true)
   parseString(lastname, 1, 50, true)
@@ -220,17 +226,17 @@ const updateUserAccount = (user, client) => {
   return client
     .update(params)
     .promise()
-    .then(() => true)
-    .catch(() => false)
+    .then(() => user)
 }
 
 const updateUserInfo = (userInfo, client) => {
-  const { location, gender, dateOfBirth, bio, tags } = userInfo
+  const { location, gender, dateOfBirth, bio, tags, status } = userInfo
 
   const newUserInfo = {
     location: encrypt(location),
     gender: gender,
     dateOfBirth: encrypt(dateOfBirth),
+    status: status,
     bio: bio,
     tags: tags,
   }
@@ -249,8 +255,7 @@ const updateUserInfo = (userInfo, client) => {
   return client
     .update(params)
     .promise()
-    .then(() => true)
-    .catch(() => false)
+    .then(() => userInfo)
 }
 
 module.exports = {
