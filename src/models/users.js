@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require('uuid')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-const { parseString } = require('../utils')
+const { parseString, parseEmail } = require('../utils')
 const { TABLENAME } = require('../config/dynamodb_config')
 const { UserInputError, AuthenticationError } = require('apollo-server')
 
@@ -89,18 +89,11 @@ const addNewUser = async (user, client) => {
   parseString(lastname, 1, 50, true)
   parseString(password, 8)
   parseString(passwordconf, 8)
+  parseEmail(email)
 
   if (password !== passwordconf) {
     throw new UserInputError(
       'Passwords doesn\'t match',
-    )
-  }
-
-  const emailRegex = /^([A-Za-z0-9_\-.])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,4})$/
-
-  if (!email || !emailRegex.test(email)) {
-    throw new UserInputError(
-      'Invalid email.',
     )
   }
 
@@ -163,6 +156,11 @@ const updateUserAccount = async (user, client) => {
   const lastname = user.lastname
   const email = user.email
 
+  parseString(username, 3, 16, true)
+  parseString(firstname, 1, 50, true)
+  parseString(lastname, 1, 50, true)
+  parseEmail(email)
+
   const params = {
     TableName: TABLENAME,
     Key: {
@@ -194,12 +192,14 @@ const updateUserAccount = async (user, client) => {
 }
 
 const updateUserInfo = async (userInfo, client) => {
+  const { location, gender, dateOfBirth, bio, tags } = userInfo
+
   const newUserInfo = {
-    location: userInfo.location,
-    gender: userInfo.gender,
-    dateOfBirth: userInfo.dateOfBirth,
-    bio: userInfo.bio,
-    tags: userInfo.tags,
+    location: location,
+    gender: gender,
+    dateOfBirth: dateOfBirth,
+    bio: bio,
+    tags: tags,
   }
 
   const params = {
