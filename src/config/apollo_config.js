@@ -28,7 +28,6 @@ const config = {
       )
 
       const currentUser = await findUserById(decodedToken.id, docClient)
-      console.log(currentUser)
 
       return { currentUser }
     }

@@ -1,4 +1,4 @@
-const { parseString, encrypt, decrypt } = require('../utils')
+const { parseString, encrypt, decrypt } = require('../src/utils')
 
 describe('Testing parseString function (that checks regex of words)', () => {
   test('Unicode character does not pass', async () => {
@@ -26,6 +26,16 @@ describe('Testing parseString function (that checks regex of words)', () => {
     } catch (err) {
       const expErr =
       'Invalid PepsiMaxZeroSugar, minimum length 3, maximum length 16.'
+      expect(err.message).toBe(expErr)
+    }
+  })
+  test('parseString dont pass +&%¤#"(', async () => {
+    try {
+      parseString('+&%¤#"(', 3, 16, true)
+      expect(true).toBe(false)
+    } catch (err) {
+      const expErr =
+      'Invalid +&%¤#"(, contains unicode charachters.'
       expect(err.message).toBe(expErr)
     }
   })

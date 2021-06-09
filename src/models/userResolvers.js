@@ -7,6 +7,7 @@ const {
   deleteUserById,
   login,
   updateUserInfo,
+  updateUserAccount,
 } = require('./users')
 
 const { docClient } = require('../config/dynamodb_config')
@@ -36,6 +37,8 @@ const getResolvers = (client = docClient) =>
           login(args.username, args.password, client),
         updateUserInfo: (_root, args) =>
           updateUserInfo(args, client),
+        updateUserAccount: (_root, args) =>
+          updateUserAccount(args, client),
       },
     }
   )

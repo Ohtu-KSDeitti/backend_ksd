@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require('uuid')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-const { parseString } = require('../utils')
+const { parseString, parseEmail } = require('../utils')
 const { TABLENAME } = require('../config/dynamodb_config')
 const { UserInputError, AuthenticationError } = require('apollo-server')
 
@@ -89,18 +89,11 @@ const addNewUser = async (user, client) => {
   parseString(lastname, 1, 50, true)
   parseString(password, 8)
   parseString(passwordconf, 8)
+  parseEmail(email)
 
   if (password !== passwordconf) {
     throw new UserInputError(
       'Passwords doesn\'t match',
-    )
-  }
-
-  const emailRegex = /^([A-Za-z0-9_\-.])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,4})$/
-
-  if (!email || !emailRegex.test(email)) {
-    throw new UserInputError(
-      'Invalid email.',
     )
   }
 
@@ -157,26 +150,57 @@ const deleteUserById = (id, client) => {
     .then(() => user)
 }
 
-const updateUserInfo = async (userInfo, client) => {
-  const user = await findUserById(userInfo.id, client)
+const updateUserAccount = async (user, client) => {
+  const username = user.username
+  const firstname = user.firstname
+  const lastname = user.lastname
+  const email = user.email
 
-  if (!user) {
-    throw new AuthenticationError('User not ')
+  parseString(username, 3, 16, true)
+  parseString(firstname, 1, 50, true)
+  parseString(lastname, 1, 50, true)
+  parseEmail(email)
+
+  const params = {
+    TableName: TABLENAME,
+    Key: {
+      'id': user.id,
+    },
+    UpdateExpression: `set #username = :username,
+    #firstname = :firstname, #lastname = :lastname, #email = :email`,
+    ExpressionAttributeNames:
+    {
+      '#username': 'username',
+      '#firstname': 'firstname',
+      '#lastname': 'lastname',
+      '#email': 'email',
+    },
+    ExpressionAttributeValues:
+    {
+      ':username': username,
+      ':firstname': firstname,
+      ':lastname': lastname,
+      ':email': email,
+    },
   }
-  const oldInfo = user.userInfo
 
-  const isNull = (oldValue, newValue) =>
-    (newValue) ? newValue : (oldValue) ? oldValue : null
+  return client
+    .update(params)
+    .promise()
+    .then(() => true)
+    .catch(() => false)
+}
+
+const updateUserInfo = async (userInfo, client) => {
+  const { location, gender, dateOfBirth, bio, tags } = userInfo
 
   const newUserInfo = {
-    location: isNull(oldInfo.location, userInfo.location),
-    gender: isNull(oldInfo.gender, userInfo.gender),
-    dateOfBirth: isNull(oldInfo.dateOfBirth, userInfo.dateOfBirth),
-    bio: isNull(oldInfo.bio, userInfo.bio),
-    tags: isNull(oldInfo.tags, userInfo.tags),
+    location: location,
+    gender: gender,
+    dateOfBirth: dateOfBirth,
+    bio: bio,
+    tags: tags,
   }
-
-  user.userInfo = newUserInfo
 
   const params = {
     TableName: TABLENAME,
@@ -192,8 +216,8 @@ const updateUserInfo = async (userInfo, client) => {
   return client
     .update(params)
     .promise()
-    .then(() => user)
-    .catch((err) => console.log(err))
+    .then(() => true)
+    .catch(() => false)
 }
 
 module.exports = {
@@ -205,4 +229,5 @@ module.exports = {
   addNewUser,
   deleteUserById,
   updateUserInfo,
+  updateUserAccount,
 }
