@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require('uuid')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-const { parseString, parseEmail } = require('../utils')
+const { parseString, parseEmail, encrypt, decrypt } = require('../utils')
 const { TABLENAME } = require('../config/dynamodb_config')
 const { UserInputError, AuthenticationError } = require('apollo-server')
 
@@ -37,7 +37,18 @@ const getAllUsers = (client) => {
   return client
     .scan({ TableName: TABLENAME })
     .promise()
-    .then((data) => data.Items)
+    .then((data) => {
+      return data.Items.map((user) => {
+        user.firstname = decrypt(user.firstname)
+        user.lastname = decrypt(user.lastname)
+        user.email = decrypt(user.email)
+        user.userInfo.location = decrypt(user.userInfo.location)
+        user.userInfo.dateOfBirth = decrypt(user.userInfo.dateOfBirth)
+        return user
+      })
+    }).catch((err) => {
+      console.log(err.message)
+    })
 }
 
 const getUserCount = (client) => {
@@ -61,7 +72,18 @@ const findUserByUsername = (username, client) => {
   return client
     .scan(params)
     .promise()
-    .then((data) => data.Items[0])
+    .then((data) => {
+      const user = data.Items[0]
+      if (!user) {
+        return null
+      }
+      user.firstname = decrypt(user.firstname)
+      user.lastname = decrypt(user.lastname)
+      user.email = decrypt(user.email)
+      user.userInfo.location = decrypt(user.userInfo.location)
+      user.userInfo.dateOfBirth = decrypt(user.userInfo.dateOfBirth)
+      return user
+    })
 }
 
 const findUserById = (id, client) => {
@@ -74,16 +96,22 @@ const findUserById = (id, client) => {
   return client
     .get(params)
     .promise()
-    .then((data) => data.Item)
+    .then((data) => {
+      const user = data.Item
+      if (!user) {
+        return null
+      }
+      user.firstname = decrypt(user.firstname)
+      user.lastname = decrypt(user.lastname)
+      user.email = decrypt(user.email)
+      user.userInfo.location = decrypt(user.userInfo.location)
+      user.userInfo.dateOfBirth = decrypt(user.userInfo.dateOfBirth)
+      return user
+    })
 }
 
 const addNewUser = async (user, client) => {
   const { username, firstname, lastname, password, passwordconf, email } = user
-  if (!username || (username.length < 3 || username.length > 16)) {
-    throw new UserInputError(
-      'Invalid username, minimum length 3, maximum length 16.',
-    )
-  }
   parseString(username, 3, 16, true)
   parseString(firstname, 1, 50, true)
   parseString(lastname, 1, 50, true)
@@ -98,7 +126,7 @@ const addNewUser = async (user, client) => {
   }
 
   const doesExist =
-    await findUserByUsername(user.username, client)
+    await findUserByUsername(username, client)
 
   if (doesExist) {
     return null
@@ -107,9 +135,9 @@ const addNewUser = async (user, client) => {
   const newUser = {
     id: uuidv4(),
     username: user.username,
-    firstname: user.firstname,
-    lastname: user.lastname,
-    email: user.email,
+    firstname: encrypt(user.firstname),
+    lastname: encrypt(user.lastname),
+    email: encrypt(user.email),
     password: await bcrypt.hash(user.password, 10),
     searchUsername: user.username.toLowerCase(),
     userInfo: {
@@ -128,13 +156,20 @@ const addNewUser = async (user, client) => {
     Item: newUser,
   }
 
+  const returnUser =
+  { ...newUser,
+    firstname: user.firstname,
+    lastname: user.lastname,
+    email: user.email,
+  }
+
   return client
     .put(params)
     .promise()
-    .then(() => newUser)
+    .then(() => returnUser)
 }
 
-const deleteUserById = (id, client) => {
+const deleteUserById = async (id, client) => {
   const params = {
     TableName: TABLENAME,
     Key: {
@@ -142,7 +177,7 @@ const deleteUserById = (id, client) => {
     },
   }
 
-  const user = findUserById(id, client)
+  const user = await findUserById(id, client)
 
   return client
     .delete(params)
@@ -150,7 +185,7 @@ const deleteUserById = (id, client) => {
     .then(() => user)
 }
 
-const updateUserAccount = async (user, client) => {
+const updateUserAccount = (user, client) => {
   const username = user.username
   const firstname = user.firstname
   const lastname = user.lastname
@@ -178,9 +213,9 @@ const updateUserAccount = async (user, client) => {
     ExpressionAttributeValues:
     {
       ':username': username,
-      ':firstname': firstname,
-      ':lastname': lastname,
-      ':email': email,
+      ':firstname': encrypt(firstname),
+      ':lastname': encrypt(lastname),
+      ':email': encrypt(email),
     },
   }
 
@@ -191,13 +226,13 @@ const updateUserAccount = async (user, client) => {
     .catch(() => false)
 }
 
-const updateUserInfo = async (userInfo, client) => {
+const updateUserInfo = (userInfo, client) => {
   const { location, gender, dateOfBirth, bio, tags } = userInfo
 
   const newUserInfo = {
-    location: location,
+    location: encrypt(location),
     gender: gender,
-    dateOfBirth: dateOfBirth,
+    dateOfBirth: encrypt(dateOfBirth),
     bio: bio,
     tags: tags,
   }
