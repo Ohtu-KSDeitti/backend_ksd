@@ -40,15 +40,40 @@ describe('Testing parseString function (that checks regex of words)', () => {
     }
   })
 
-  test('Text is decrypted properly', () => {
+  test('encrypt returns encrypted text if text is not null', () => {
     const str = 'Tosisalaista'
-    const text = encrypt(str, 'RVh8MfVcCXM2bZdNUkuXymx5JENC4jxc')
+    const text = encrypt(str)
     expect(text).not.toBe(str)
   })
 
-  test('Text is decrypted and encrypted properly', () => {
+  test('encrypt returns empty string if str is empty', () => {
+    const str = ''
+    const text = encrypt(str)
+    expect(text).toBe(str)
+  })
+
+  test('encrypt returns empty string if str is undefined', () => {
+    const str = undefined
+    const text = encrypt(str)
+    expect(text).toBe('')
+  })
+
+
+  test('decryption returns correct string', () => {
     const str = 'Tosisalaista'
-    const text = encrypt(str, 'RVh8MfVcCXM2bZdNUkuXymx5JENC4jxc')
-    expect(decrypt(text, 'RVh8MfVcCXM2bZdNUkuXymx5JENC4jxc')).toBe(str)
+    const text = encrypt(str)
+    expect(decrypt(text)).toBe(str)
+  })
+
+  test('decryption returns empty string if str is empty', () => {
+    const str = ''
+    const text = encrypt(str)
+    expect(decrypt(text)).toBe(str)
+  })
+
+  test('decryption returns empty string if str is undefined', () => {
+    const str = undefined
+    const text = encrypt(str)
+    expect(decrypt(text)).toBe('')
   })
 })
