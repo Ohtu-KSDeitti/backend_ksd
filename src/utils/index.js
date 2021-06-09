@@ -28,6 +28,15 @@ const hasUnicodeChar = (str) => {
   return /\W+/.test(str)
 }
 
+const parseEmail = (str) => {
+  const emailRegex = /^([A-Za-z0-9_\-.])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,4})$/
+
+  if (!str || !emailRegex.test(str)) {
+    throw new UserInputError(
+      'Invalid email.',
+    )
+  }
+}
 
 const encrypt = (str, key = JWT_SECRET) => {
   const iv = crypto.randomBytes(16)
@@ -57,4 +66,5 @@ module.exports = {
   parseString,
   encrypt,
   decrypt,
+  parseEmail,
 }
