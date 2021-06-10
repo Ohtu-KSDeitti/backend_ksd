@@ -8,6 +8,7 @@ const {
   login,
   updateUserInfo,
   updateUserAccount,
+  updateUserPassword,
 } = require('./users')
 
 const getResolvers = () =>
@@ -37,6 +38,8 @@ const getResolvers = () =>
           updateUserInfo(args),
         updateUserAccount: (_root, args) =>
           updateUserAccount(args),
+        updateUserPassword: (_root, args) =>
+          updateUserPassword(args),
       },
     }
   )

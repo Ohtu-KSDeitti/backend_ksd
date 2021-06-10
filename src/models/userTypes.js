@@ -84,6 +84,11 @@ type Mutation {
     bio: String
     tags: [String]
   ): UserInfo
+  updateUserPassword(
+    id: ID!
+    password: String!
+    passwordconf: String!
+  ): User
 }
 `
 

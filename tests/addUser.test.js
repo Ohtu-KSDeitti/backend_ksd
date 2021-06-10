@@ -2,6 +2,7 @@ const { ApolloServer, gql } = require('apollo-server')
 const { createTestClient } = require('apollo-server-testing')
 const { typeDefs } = require('../src/models/userTypes')
 const { getResolvers } = require('../src/models/userResolvers')
+const { DELETE_USER } = require('./setup/queries')
 
 const resolvers = getResolvers()
 
@@ -32,7 +33,7 @@ describe('User-api general tests', () => {
   })
 
   test('Can create user', async () => {
-    const CREATE_USER= gql`
+    const CREATE_USER = gql`
     mutation{
       addNewUser(
           username: "heikki123", 
@@ -132,15 +133,6 @@ describe('User-api general tests', () => {
 
     const { data: { findUserByUsername } } = await query({ query: FIND_USER })
 
-    const DELETE_USER = gql`
-    mutation($id: ID!){
-      deleteUserById(id: $id){
-        id
-        username
-      }
-    }
-    `
-
     const { data: { deleteUserById } } =
       await mutate(
         { mutation: DELETE_USER, variables: { id: findUserByUsername.id } })
@@ -149,15 +141,6 @@ describe('User-api general tests', () => {
   })
 
   test('deleteUserById returns null if id doesn\'t exist', async () => {
-    const DELETE_USER = gql`
-    mutation($id: ID!){
-      deleteUserById(id: $id){
-        id
-        username
-      }
-    }
-    `
-
     const { data: { deleteUserById } } =
       await mutate({ mutation: DELETE_USER, variables: { id: 'jokuIdHehe' } })
 
