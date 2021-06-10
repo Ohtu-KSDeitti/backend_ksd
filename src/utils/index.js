@@ -39,6 +39,41 @@ const parseEmail = (str) => {
   }
 }
 
+const parseDate = (date) => {
+  if (!date || date.length === 0) {
+    return
+  }
+
+  const oldDate = date.split('-')
+
+  if (oldDate.length !== 3) {
+    throw new UserInputError(
+      'Invalid date form.',
+    )
+  }
+  // frontend yyyy-mm-dd --> mm-dd-yyyy
+  const newDate = [oldDate[1], oldDate[2], oldDate[0]]
+  const isValid = !isNaN(Date.parse(newDate.join('-')))
+
+  if (!isValid) {
+    throw new UserInputError(
+      'Invalid date form.',
+    )
+  }
+}
+
+const parseLocation = (location) => {
+  if (!location) {
+    return
+  }
+
+  if (!/[a-zA-Z]*/.test(location)) {
+    throw new UserInputError(
+      'Location should only contain letters.',
+    )
+  }
+}
+
 const encrypt = (str, key = JWT_SECRET) => {
   if (!str) {
     return ''
@@ -88,4 +123,6 @@ module.exports = {
   encrypt,
   decrypt,
   parseEmail,
+  parseDate,
+  parseLocation,
 }

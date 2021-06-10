@@ -6,5 +6,6 @@ module.exports = {
     'node_modules',
     'config',
     '<rootDir>/src/index.js',
+    'tests',
   ],
 }

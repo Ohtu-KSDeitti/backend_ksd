@@ -2,7 +2,13 @@ const { v4: uuidv4 } = require('uuid')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const { docClient } = require('../config/dynamodb_config')
-const { parseString, parseEmail, encrypt, decrypt } = require('../utils')
+const {
+  parseString,
+  parseEmail,
+  encrypt,
+  decrypt,
+  parseDate,
+  parseLocation } = require('../utils')
 const { TABLENAME } = require('../config/dynamodb_config')
 const { UserInputError, AuthenticationError } = require('apollo-server')
 
@@ -231,12 +237,11 @@ const updateUserInfo = (userInfo, client = docClient) => {
   const { location, gender, dateOfBirth, bio, tags, status } = userInfo
 
   if (bio) {
-    if (bio.length > 150) {
-      throw new UserInputError(
-        'Bio has too many charachters, max 150.',
-      )
-    }
+    parseString(bio, 1, 500, true)
   }
+
+  parseDate(dateOfBirth)
+  parseLocation(location)
 
   const newUserInfo = {
     location: encrypt(location),
@@ -264,6 +269,37 @@ const updateUserInfo = (userInfo, client = docClient) => {
     .then(() => userInfo)
 }
 
+const updateUserPassword = async (user, client = docClient) => {
+  const { id, password, passwordconf } = user
+
+  parseString(password, 8)
+  parseString(passwordconf, 8)
+
+  if (password !== passwordconf) {
+    throw new UserInputError(
+      'Passwords doesn\'t match',
+    )
+  }
+
+  user.password = await bcrypt.hash(password, 10)
+
+  const params = {
+    TableName: TABLENAME,
+    Key: {
+      'id': id,
+    },
+    UpdateExpression: 'set #password = :password',
+    ExpressionAttributeNames: { '#password': 'password' },
+    ExpressionAttributeValues: { ':password': user.password,
+    },
+  }
+
+  return client
+    .update(params)
+    .promise()
+    .then(() => user)
+}
+
 module.exports = {
   login,
   getAllUsers,
@@ -274,4 +310,5 @@ module.exports = {
   deleteUserById,
   updateUserInfo,
   updateUserAccount,
+  updateUserPassword,
 }

@@ -1,4 +1,4 @@
-const { parseString, encrypt, decrypt } = require('../src/utils')
+const { parseString, encrypt, decrypt, parseDate } = require('../src/utils')
 
 describe('Testing parseString function (that checks regex of words)', () => {
   test('Unicode character does not pass', async () => {
@@ -75,5 +75,41 @@ describe('Testing parseString function (that checks regex of words)', () => {
     const str = undefined
     const text = encrypt(str)
     expect(decrypt(text)).toBe('')
+  })
+
+  test('Validate parseDate datelength !==3, length==2', async () => {
+    try {
+      parseDate('2000-12')
+    } catch (err) {
+      const expectedErr = 'Invalid date form.'
+      expect(err.message).toBe(expectedErr)
+    }
+  })
+
+  test('Validate parseDate datelength !==3, length==0', async () => {
+    try {
+      parseDate('')
+      expect(true).toBe(true)
+    } catch (err) {
+      console.log(err)
+      const expectedErr = 'Invalid date form.'
+      expect(err.message).not.toBe(expectedErr)
+    }
+  })
+  test('Validate parseDate datelength !==3, length==4', async () => {
+    try {
+      parseDate('2000-12-3-1')
+    } catch (err) {
+      const expectedErr = 'Invalid date form.'
+      expect(err.message).toBe(expectedErr)
+    }
+  })
+  test('Validate parseDate datelength !==3, length==9', async () => {
+    try {
+      parseDate('2000-12-3-1-3-4-77-11-33')
+    } catch (err) {
+      const expectedErr = 'Invalid date form.'
+      expect(err.message).toBe(expectedErr)
+    }
   })
 })
