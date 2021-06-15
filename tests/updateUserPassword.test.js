@@ -23,13 +23,13 @@ describe('updateUserPassword tests', () => {
   })
 
   test('password updates succesfully', async () => {
-    const { data: { findUserByUsername } } = await query({ query: FIND_USER })
+    const { data: { findUserByEmail } } = await query({ query: FIND_USER })
 
     const data =
       await mutate(
         { mutation: UPDATE_USER_PASSWORD,
           variables: {
-            id: findUserByUsername.id,
+            id: findUserByEmail.id,
             password: 'bigkekeke',
             passwordconf: 'bigkekeke',
           },
@@ -39,13 +39,13 @@ describe('updateUserPassword tests', () => {
   })
 
   test('password doesn\'t change if they don\'t match', async () => {
-    const { data: { findUserByUsername } } = await query({ query: FIND_USER })
+    const { data: { findUserByEmail } } = await query({ query: FIND_USER })
 
     const data =
       await mutate(
         { mutation: UPDATE_USER_PASSWORD,
           variables: {
-            id: findUserByUsername.id,
+            id: findUserByEmail.id,
             password: 'bigkekeke',
             passwordconf: 'hahahaha',
           },
