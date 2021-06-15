@@ -65,7 +65,7 @@ type Mutation {
     id: ID!
   ): User
   login(
-    username: String!
+    email: String!
     password: String!
   ): Token
   updateUserAccount(

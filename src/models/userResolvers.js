@@ -33,7 +33,7 @@ const getResolvers = () =>
         deleteUserById: (_root, args) =>
           deleteUserById(args.id),
         login: (_root, args) =>
-          login(args.username, args.password),
+          login(args.email, args.password),
         updateUserInfo: (_root, args) =>
           updateUserInfo(args),
         updateUserAccount: (_root, args) =>
