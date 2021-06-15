@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require('uuid')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-const { docClient } = require('../config/dynamodb_config')
+const { docClient, JWT_SECRET } = require('../config/dynamodb_config')
 const {
   parseString,
   parseEmail,
@@ -12,9 +12,6 @@ const {
   parseBio } = require('../utils')
 const { TABLENAME } = require('../config/dynamodb_config')
 const { UserInputError, AuthenticationError } = require('apollo-server')
-
-require('dotenv').config()
-const JWT_SECRET = process.env.SECRET_KEY
 
 const login = async (email, password) => {
   const user = await findUserByEmail(email)

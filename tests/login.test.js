@@ -18,13 +18,13 @@ describe('User-api general tests', () => {
     await mutate({ mutation: CREATE_USER })
   })
 
-  test('Login returns token if password is correct', async () => {
-    const { data: { login } } = await mutate(
+  test('Login doesn\'t throw error if password is correct', async () => {
+    const data = await mutate(
       { mutation: LOGIN,
         variables: { email: 'jeejee@com.fi', password: 'bigsikret' },
       })
 
-    expect(login).not.toBe(null)
+    expect(data.errors).toBe(undefined)
   })
 
   test('Login throws error if password is incorrect', async () => {
