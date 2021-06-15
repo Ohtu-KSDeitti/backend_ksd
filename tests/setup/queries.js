@@ -15,6 +15,17 @@ const CREATE_USER= gql`
     }
     `
 
+const LOGIN = gql`
+    mutation($email: String!, $password: String!) {
+      login(
+        email: $email,
+        password: $password
+      ) {
+        value
+      }
+    }
+`
+
 const UPDATE_USER_INFO = gql`
 mutation($id: ID!, 
   $dateOfBirth: String,
@@ -103,4 +114,5 @@ module.exports = {
   DELETE_USER,
   UPDATE_USER_ACCOUNT,
   UPDATE_USER_PASSWORD,
+  LOGIN,
 }
