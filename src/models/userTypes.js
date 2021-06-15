@@ -47,7 +47,7 @@ type UserInfo {
 type Query {
   getUserCount: Int!
   getAllUsers: [User!]!
-  findUserByUsername(username: String): User
+  findUserByEmail(email: String): User
   findUserById(id: ID!): User
   currentUser: User!
 }

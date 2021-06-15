@@ -16,25 +16,25 @@ const { UserInputError, AuthenticationError } = require('apollo-server')
 require('dotenv').config()
 const JWT_SECRET = process.env.SECRET_KEY
 
-const login = async (username, password) => {
-  const user = await findUserByUsername(username)
+const login = async (email, password) => {
+  const user = await findUserByEmail(email)
 
   if (!user) {
-    throw new AuthenticationError('Invalid username or password')
+    throw new AuthenticationError('Invalid email or password')
   }
 
   const correctPassword = await bcrypt.compare(password, user.password)
 
   if (!correctPassword) {
-    throw new AuthenticationError('Invalid username or password')
+    throw new AuthenticationError('Invalid email or password')
   }
 
   const userForToken = {
     id: user.id,
-    username: user.username,
+    email: user.email,
   }
 
-  return { value: jwt.sign(userForToken, JWT_SECRET, { expiresIn: 900 }) }
+  return { value: jwt.sign(userForToken, JWT_SECRET, { expiresIn: (900 * 4) }) }
 }
 
 const getAllUsers = (client = docClient) => {
@@ -45,7 +45,6 @@ const getAllUsers = (client = docClient) => {
       return data.Items.map((user) => {
         user.firstname = decrypt(user.firstname)
         user.lastname = decrypt(user.lastname)
-        user.email = decrypt(user.email)
         user.userInfo.location = decrypt(user.userInfo.location)
         user.userInfo.dateOfBirth = decrypt(user.userInfo.dateOfBirth)
         return user
@@ -60,15 +59,15 @@ const getUserCount = (client = docClient) => {
     .then((data) => data.Count)
 }
 
-const findUserByUsername = (username, client = docClient) => {
+const findUserByEmail = (email, client = docClient) => {
   const params = {
     TableName: TABLENAME,
-    FilterExpression: '#searchUsername = :searchUsername',
+    FilterExpression: '#email = :email',
     ExpressionAttributeNames: {
-      '#searchUsername': 'searchUsername',
+      '#email': 'email',
     },
     ExpressionAttributeValues: {
-      ':searchUsername': username.toLowerCase(),
+      ':email': email.toLowerCase(),
     },
   }
   return client
@@ -81,7 +80,6 @@ const findUserByUsername = (username, client = docClient) => {
       }
       user.firstname = decrypt(user.firstname)
       user.lastname = decrypt(user.lastname)
-      user.email = decrypt(user.email)
       user.userInfo.location = decrypt(user.userInfo.location)
       user.userInfo.dateOfBirth = decrypt(user.userInfo.dateOfBirth)
       return user
@@ -105,7 +103,6 @@ const findUserById = (id, client = docClient) => {
       }
       user.firstname = decrypt(user.firstname)
       user.lastname = decrypt(user.lastname)
-      user.email = decrypt(user.email)
       user.userInfo.location = decrypt(user.userInfo.location)
       user.userInfo.dateOfBirth = decrypt(user.userInfo.dateOfBirth)
       return user
@@ -128,7 +125,7 @@ const addNewUser = async (user, client = docClient) => {
   }
 
   const doesExist =
-    await findUserByUsername(username)
+    await findUserByEmail(email)
 
   if (doesExist) {
     throw new UserInputError('User already exists!')
@@ -139,9 +136,8 @@ const addNewUser = async (user, client = docClient) => {
     username: user.username,
     firstname: encrypt(user.firstname),
     lastname: encrypt(user.lastname),
-    email: encrypt(user.email),
+    email: user.email.toLowerCase(),
     password: await bcrypt.hash(user.password, 10),
-    searchUsername: user.username.toLowerCase(),
     userInfo: {
       location: '',
       gender: 'FEMALE',
@@ -224,7 +220,7 @@ const updateUserAccount = (user, client = docClient) => {
       ':username': username,
       ':firstname': encrypt(firstname),
       ':lastname': encrypt(lastname),
-      ':email': encrypt(email),
+      ':email': email,
     },
   }
 
@@ -302,7 +298,7 @@ module.exports = {
   login,
   getAllUsers,
   getUserCount,
-  findUserByUsername,
+  findUserByEmail,
   findUserById,
   addNewUser,
   deleteUserById,
