@@ -6,7 +6,6 @@ const {
   CREATE_USER,
   FIND_USER,
   UPDATE_USER_INFO,
-  UPDATE_USER_ACCOUNT,
 } = require('./setup/queries')
 
 const resolvers = getResolvers()
@@ -23,7 +22,7 @@ describe('updateUser tests', () => {
     await mutate({ mutation: CREATE_USER })
   })
 
-  test('updateUserInfo updates info', async () => {
+  test('updateUserInfo updates info with few fields', async () => {
     const { data: { findUserByUsername } } = await query({ query: FIND_USER })
 
     const expected = {
@@ -47,6 +46,27 @@ describe('updateUser tests', () => {
             bio: null,
             tags: [],
           },
+        })
+
+    expect(updateUserInfo).toEqual(expected)
+  })
+
+  test('updateUserInfo updates userInfo', async () => {
+    const { data: { findUserByUsername } } = await query({ query: FIND_USER })
+
+    const expected = {
+      gender: 'MALE',
+      location: 'Pori',
+      dateOfBirth: '1998-11-11',
+      status: 'SINGLE',
+      bio: 'Tykkään ruokahetkistä perheen kanssa',
+      tags: [],
+    }
+
+    const { data: { updateUserInfo } } =
+      await mutate(
+        { mutation: UPDATE_USER_INFO,
+          variables: { id: findUserByUsername.id, ...expected },
         })
 
     expect(updateUserInfo).toEqual(expected)
@@ -109,24 +129,59 @@ describe('updateUser tests', () => {
     expect(data.errors[0].message).toContain('Invalid date form')
   })
 
-  test('updateUserAccount updates account info', async () => {
+  test('updateUserInfo updates userInfo', async () => {
     const { data: { findUserByUsername } } = await query({ query: FIND_USER })
 
     const expected = {
-      id: findUserByUsername.id,
-      username: 'juuso23',
-      firstname: 'Jooseppi',
-      lastname: 'Miettinen',
-      email: 'jeejee@com.fi',
+      gender: 'MALE',
+      location: 'Pori',
+      dateOfBirth: '1998-11-11',
+      status: 'SINGLE',
+      bio: 'Tykkään ruokahetkistä perheen kanssa',
+      tags: [],
     }
 
-    const { data: { updateUserAccount } } =
+    const { data: { updateUserInfo } } =
       await mutate(
-        { mutation: UPDATE_USER_ACCOUNT,
-          variables: { ...expected },
+        { mutation: UPDATE_USER_INFO,
+          variables: { id: findUserByUsername.id, ...expected },
         })
 
-    expect(updateUserAccount).toEqual(expected)
+    expect(updateUserInfo).toEqual(expected)
+  })
+
+  test('updateUserInfo doesn\'t update info if bio is over 500', async () => {
+    const { data: { findUserByUsername } } = await query({ query: FIND_USER })
+
+    const expected = {
+      gender: 'MALE',
+      location: 'Pori',
+      dateOfBirth: '1998-11-11',
+      status: 'SINGLE',
+      bio: `Donec in elementum sem, eu maximus neque. 
+      Suspendisse sit amet velit purus. 
+      Pellentesque imperdiet luctus metus sit amet suscipit. 
+      Cras elementum nulla id orci vulputate consequat. 
+      Etiam fringilla, sem nec semper gravida, 
+      felis nibh suscipit mi, quis lacinia orci lorem vel leo. 
+      Duis faucibus vehicula hendrerit. Morbi tempor gravida purus. 
+      Donec in elementum sem, eu maximus neque. 
+      Suspendisse sit amet velit purus. 
+      Pellentesque imperdiet luctus metus sit amet suscipit. 
+      Cras elementum nulla id orci vulputate consequat. 
+      Etiam fringilla, sem nec semper gravida, 
+      felis nibh suscipit mi, quis lacinia orci lorem vel leo. 
+      Duis faucibus vehicula hendrerit. Morbi tempor gravida purus. `,
+      tags: [],
+    }
+
+    const data =
+      await mutate(
+        { mutation: UPDATE_USER_INFO,
+          variables: { id: findUserByUsername.id, ...expected },
+        })
+
+    expect(data.errors[0].message).toContain('Bio accepts only')
   })
 })
 

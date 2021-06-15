@@ -8,7 +8,8 @@ const {
   encrypt,
   decrypt,
   parseDate,
-  parseLocation } = require('../utils')
+  parseLocation,
+  parseBio } = require('../utils')
 const { TABLENAME } = require('../config/dynamodb_config')
 const { UserInputError, AuthenticationError } = require('apollo-server')
 
@@ -130,7 +131,7 @@ const addNewUser = async (user, client = docClient) => {
     await findUserByUsername(username)
 
   if (doesExist) {
-    return null
+    throw new UserInputError('User already exists!')
   }
 
   const newUser = {
@@ -143,8 +144,8 @@ const addNewUser = async (user, client = docClient) => {
     searchUsername: user.username.toLowerCase(),
     userInfo: {
       location: '',
-      gender: null,
-      status: null,
+      gender: 'FEMALE',
+      status: 'SINGLE',
       dateOfBirth: '',
       profileLikes: 0,
       bio: '',
@@ -236,10 +237,7 @@ const updateUserAccount = (user, client = docClient) => {
 const updateUserInfo = (userInfo, client = docClient) => {
   const { location, gender, dateOfBirth, bio, tags, status } = userInfo
 
-  if (bio) {
-    parseString(bio, 1, 500, true)
-  }
-
+  parseBio(bio)
   parseDate(dateOfBirth)
   parseLocation(location)
 

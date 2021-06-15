@@ -12,14 +12,14 @@ const parseString = (str, min, max = 99, unicode = false) => {
   if (unicode) {
     if (hasUnicodeChar(str)) {
       throw new UserInputError(
-        `Invalid ${str}, contains unicode charachters.`,
+        'Invalid input, contains unicode charachters.',
       )
     }
   }
 
   if (length < min || length > max) {
     throw new UserInputError(
-      `Invalid ${str}, minimum length ${min}, maximum length ${max}.`,
+      `Invalid input, minimum length ${min}, maximum length ${max}.`,
     )
   }
 }
@@ -35,6 +35,23 @@ const parseEmail = (str) => {
   if (!str || !emailRegex.test(str)) {
     throw new UserInputError(
       'Invalid email.',
+    )
+  }
+}
+
+const parseBio = (bio) => {
+  if (!bio) {
+    return
+  }
+
+  if (bio.length > 500) {
+    throw new UserInputError(
+      'Bio accepts only letters and spaces, max length 500',
+    )
+  }
+  if (/^([A-Z|a-z]+\s)*$/.test(bio)) {
+    throw new UserInputError(
+      'Bio accepts only letters and spaces, max length 500',
     )
   }
 }
@@ -124,5 +141,6 @@ module.exports = {
   decrypt,
   parseEmail,
   parseDate,
+  parseBio,
   parseLocation,
 }
