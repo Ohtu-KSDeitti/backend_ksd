@@ -10,7 +10,7 @@ const CREATE_USER= gql`
           lastname: "Miettinen",
           email: "jeejee@com.fi", 
         ){
-          username
+          email
       }
     }
     `
@@ -43,11 +43,11 @@ mutation($id: ID!,
 `
 const FIND_USER = gql`
 query {
- findUserByUsername(
-   username: "juuso23"
+ findUserByEmail(
+   email: "jeejee@com.fi"
    ){
    id
-   username
+   email
  }
 }
 `
@@ -91,7 +91,7 @@ const DELETE_USER = gql`
     mutation($id: ID!){
       deleteUserById(id: $id){
         id
-        username
+        email
       }
     }
     `
