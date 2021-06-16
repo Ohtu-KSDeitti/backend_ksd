@@ -47,7 +47,7 @@ type UserInfo {
 type Query {
   getUserCount: Int!
   getAllUsers: [User!]!
-  findUserByUsername(username: String): User
+  findUserByEmail(email: String): User
   findUserById(id: ID!): User
   currentUser: User!
 }
@@ -65,7 +65,7 @@ type Mutation {
     id: ID!
   ): User
   login(
-    username: String!
+    email: String!
     password: String!
   ): Token
   updateUserAccount(

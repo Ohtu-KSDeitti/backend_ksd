@@ -10,10 +10,21 @@ const CREATE_USER= gql`
           lastname: "Miettinen",
           email: "jeejee@com.fi", 
         ){
-          username
+          email
       }
     }
     `
+
+const LOGIN = gql`
+    mutation($email: String!, $password: String!) {
+      login(
+        email: $email,
+        password: $password
+      ) {
+        value
+      }
+    }
+`
 
 const UPDATE_USER_INFO = gql`
 mutation($id: ID!, 
@@ -43,11 +54,11 @@ mutation($id: ID!,
 `
 const FIND_USER = gql`
 query {
- findUserByUsername(
-   username: "juuso23"
+ findUserByEmail(
+   email: "jeejee@com.fi"
    ){
    id
-   username
+   email
  }
 }
 `
@@ -91,7 +102,7 @@ const DELETE_USER = gql`
     mutation($id: ID!){
       deleteUserById(id: $id){
         id
-        username
+        email
       }
     }
     `
@@ -103,4 +114,5 @@ module.exports = {
   DELETE_USER,
   UPDATE_USER_ACCOUNT,
   UPDATE_USER_PASSWORD,
+  LOGIN,
 }

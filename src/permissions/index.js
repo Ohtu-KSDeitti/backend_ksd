@@ -11,7 +11,7 @@ const isReadingOwnAccount = rule()((_parent, { id }, { currentUser }) => {
 const permissions = shield({
   Query: {
     findUserById: isAuthenticated,
-    findUserByUsername: isAuthenticated,
+    findUserByEmail: isAuthenticated,
     currentUser: isAuthenticated,
     getAllUsers: isAuthenticated,
     getUserCount: isAuthenticated,

@@ -1,7 +1,7 @@
 const {
   getUserCount,
   getAllUsers,
-  findUserByUsername,
+  findUserByEmail,
   findUserById,
   addNewUser,
   deleteUserById,
@@ -19,8 +19,8 @@ const getResolvers = () =>
           getUserCount(),
         getAllUsers: (_root, _args) =>
           getAllUsers(),
-        findUserByUsername: (_root, args) =>
-          findUserByUsername(args.username),
+        findUserByEmail: (_root, args) =>
+          findUserByEmail(args.email),
         findUserById: (_root, args) =>
           findUserById(args.id),
         currentUser: (_root, _args, context) => {
@@ -33,7 +33,7 @@ const getResolvers = () =>
         deleteUserById: (_root, args) =>
           deleteUserById(args.id),
         login: (_root, args) =>
-          login(args.username, args.password),
+          login(args.email, args.password),
         updateUserInfo: (_root, args) =>
           updateUserInfo(args),
         updateUserAccount: (_root, args) =>

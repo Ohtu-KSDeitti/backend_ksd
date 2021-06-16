@@ -23,7 +23,7 @@ describe('updateUser tests', () => {
   })
 
   test('updateUserInfo updates info with few fields', async () => {
-    const { data: { findUserByUsername } } = await query({ query: FIND_USER })
+    const { data: { findUserByEmail } } = await query({ query: FIND_USER })
 
     const expected = {
       gender: 'MALE',
@@ -38,7 +38,7 @@ describe('updateUser tests', () => {
       await mutate(
         { mutation: UPDATE_USER_INFO,
           variables: {
-            id: findUserByUsername.id,
+            id: findUserByEmail.id,
             gender: 'MALE',
             location: 'Pori',
             dateOfBirth: null,
@@ -52,7 +52,7 @@ describe('updateUser tests', () => {
   })
 
   test('updateUserInfo updates userInfo', async () => {
-    const { data: { findUserByUsername } } = await query({ query: FIND_USER })
+    const { data: { findUserByEmail } } = await query({ query: FIND_USER })
 
     const expected = {
       gender: 'MALE',
@@ -66,20 +66,20 @@ describe('updateUser tests', () => {
     const { data: { updateUserInfo } } =
       await mutate(
         { mutation: UPDATE_USER_INFO,
-          variables: { id: findUserByUsername.id, ...expected },
+          variables: { id: findUserByEmail.id, ...expected },
         })
 
     expect(updateUserInfo).toEqual(expected)
   })
 
   test('updateUserInfo throws error if gender is wrong', async () => {
-    const { data: { findUserByUsername } } = await query({ query: FIND_USER })
+    const { data: { findUserByEmail } } = await query({ query: FIND_USER })
 
     const data =
       await mutate(
         { mutation: UPDATE_USER_INFO,
           variables: {
-            id: findUserByUsername.id,
+            id: findUserByEmail.id,
             gender: 'mahtimies',
             location: 'Pori',
             dateOfBirth: null,
@@ -92,13 +92,13 @@ describe('updateUser tests', () => {
   })
 
   test('updateUserInfo throws error if status is wrong', async () => {
-    const { data: { findUserByUsername } } = await query({ query: FIND_USER })
+    const { data: { findUserByEmail } } = await query({ query: FIND_USER })
 
     const data =
       await mutate(
         { mutation: UPDATE_USER_INFO,
           variables: {
-            id: findUserByUsername.id,
+            id: findUserByEmail.id,
             gender: 'MALE',
             location: 'Pori',
             dateOfBirth: null,
@@ -111,13 +111,13 @@ describe('updateUser tests', () => {
   })
 
   test('updateUserInfo throws error if dateOfBirth is wrong', async () => {
-    const { data: { findUserByUsername } } = await query({ query: FIND_USER })
+    const { data: { findUserByEmail } } = await query({ query: FIND_USER })
 
     const data =
       await mutate(
         { mutation: UPDATE_USER_INFO,
           variables: {
-            id: findUserByUsername.id,
+            id: findUserByEmail.id,
             gender: 'MALE',
             location: 'Pori',
             dateOfBirth: '<html> hehe </html>',
@@ -130,7 +130,7 @@ describe('updateUser tests', () => {
   })
 
   test('updateUserInfo updates userInfo', async () => {
-    const { data: { findUserByUsername } } = await query({ query: FIND_USER })
+    const { data: { findUserByEmail } } = await query({ query: FIND_USER })
 
     const expected = {
       gender: 'MALE',
@@ -144,14 +144,14 @@ describe('updateUser tests', () => {
     const { data: { updateUserInfo } } =
       await mutate(
         { mutation: UPDATE_USER_INFO,
-          variables: { id: findUserByUsername.id, ...expected },
+          variables: { id: findUserByEmail.id, ...expected },
         })
 
     expect(updateUserInfo).toEqual(expected)
   })
 
   test('updateUserInfo doesn\'t update info if bio is over 500', async () => {
-    const { data: { findUserByUsername } } = await query({ query: FIND_USER })
+    const { data: { findUserByEmail } } = await query({ query: FIND_USER })
 
     const expected = {
       gender: 'MALE',
@@ -178,7 +178,7 @@ describe('updateUser tests', () => {
     const data =
       await mutate(
         { mutation: UPDATE_USER_INFO,
-          variables: { id: findUserByUsername.id, ...expected },
+          variables: { id: findUserByEmail.id, ...expected },
         })
 
     expect(data.errors[0].message).toContain('Bio accepts only')
