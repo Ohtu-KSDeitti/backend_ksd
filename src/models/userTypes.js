@@ -26,6 +26,28 @@ enum Gender {
   FEMALE
 }
 
+enum Region {
+  AHVENANMAA
+  ETELAKARJALA
+  ETELAPOHJANMAA
+  ETELASAVO
+  KAINUU
+  KANTAHAME
+  KESKIPOHJANMAA
+  KESKISUOMI
+  KYMENLAAKSO
+  LAPPI
+  PIRKANMAA
+  POHJANMAA
+  POHJOISKARJALA
+  POHJOISPOHJANMAA
+  POHJOISSAVO
+  PAIJATHAME
+  SATAKUNTA
+  UUSIMAA
+  VARSINAISSUOMI
+}
+
 enum Status {
   SINGLE
   DIVORCED
@@ -35,7 +57,7 @@ enum Status {
 }
 
 type UserInfo {
-  location: String
+  location: Region
   status: Status
   gender: Gender
   dateOfBirth: String
@@ -77,7 +99,7 @@ type Mutation {
   ): User
   updateUserInfo(
     id: ID!
-    location: String
+    location: Region
     status: Status
     gender: Gender
     dateOfBirth: String
