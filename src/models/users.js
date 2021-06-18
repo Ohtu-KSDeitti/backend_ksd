@@ -8,7 +8,6 @@ const {
   encrypt,
   decrypt,
   parseDate,
-  parseLocation,
   parseBio } = require('../utils')
 const { TABLENAME } = require('../config/dynamodb_config')
 const { UserInputError, AuthenticationError } = require('apollo-server')
@@ -42,7 +41,6 @@ const getAllUsers = (client = docClient) => {
       return data.Items.map((user) => {
         user.firstname = decrypt(user.firstname)
         user.lastname = decrypt(user.lastname)
-        user.userInfo.location = decrypt(user.userInfo.location)
         user.userInfo.dateOfBirth = decrypt(user.userInfo.dateOfBirth)
         return user
       })
@@ -77,7 +75,6 @@ const findUserByEmail = (email, client = docClient) => {
       }
       user.firstname = decrypt(user.firstname)
       user.lastname = decrypt(user.lastname)
-      user.userInfo.location = decrypt(user.userInfo.location)
       user.userInfo.dateOfBirth = decrypt(user.userInfo.dateOfBirth)
       return user
     })
@@ -100,7 +97,6 @@ const findUserById = (id, client = docClient) => {
       }
       user.firstname = decrypt(user.firstname)
       user.lastname = decrypt(user.lastname)
-      user.userInfo.location = decrypt(user.userInfo.location)
       user.userInfo.dateOfBirth = decrypt(user.userInfo.dateOfBirth)
       return user
     })
@@ -136,7 +132,7 @@ const addNewUser = async (user, client = docClient) => {
     email: user.email.toLowerCase(),
     password: await bcrypt.hash(user.password, 10),
     userInfo: {
-      location: '',
+      location: 'AHVENANMAA',
       gender: 'FEMALE',
       status: 'SINGLE',
       dateOfBirth: '',
@@ -232,10 +228,9 @@ const updateUserInfo = (userInfo, client = docClient) => {
 
   parseBio(bio)
   parseDate(dateOfBirth)
-  parseLocation(location)
 
   const newUserInfo = {
-    location: encrypt(location),
+    location: location,
     gender: gender,
     dateOfBirth: encrypt(dateOfBirth),
     status: status,

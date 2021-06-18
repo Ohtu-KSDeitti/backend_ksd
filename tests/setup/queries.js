@@ -31,7 +31,7 @@ mutation($id: ID!,
   $dateOfBirth: String,
   $gender: Gender,
   $status: Status,
-  $location: String,
+  $location: Region,
   $bio: String,
   $tags: [String]){
   updateUserInfo(

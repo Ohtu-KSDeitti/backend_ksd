@@ -27,7 +27,7 @@ describe('updateUser tests', () => {
 
     const expected = {
       gender: 'MALE',
-      location: 'Pori',
+      location: 'AHVENANMAA',
       dateOfBirth: null,
       status: 'SINGLE',
       bio: null,
@@ -40,7 +40,7 @@ describe('updateUser tests', () => {
           variables: {
             id: findUserByEmail.id,
             gender: 'MALE',
-            location: 'Pori',
+            location: 'AHVENANMAA',
             dateOfBirth: null,
             status: 'SINGLE',
             bio: null,
@@ -56,7 +56,7 @@ describe('updateUser tests', () => {
 
     const expected = {
       gender: 'MALE',
-      location: 'Pori',
+      location: 'AHVENANMAA',
       dateOfBirth: '1998-11-11',
       status: 'SINGLE',
       bio: 'Tykkään ruokahetkistä perheen kanssa',
@@ -81,7 +81,7 @@ describe('updateUser tests', () => {
           variables: {
             id: findUserByEmail.id,
             gender: 'mahtimies',
-            location: 'Pori',
+            location: 'AHVENANMAA',
             dateOfBirth: null,
             status: 'SINGLE',
             bio: null,
@@ -89,6 +89,25 @@ describe('updateUser tests', () => {
           },
         })
     expect(data.errors[0].message).toContain('Expected type Gender')
+  })
+
+  test('updateUserInfo throws error if location is wrong', async () => {
+    const { data: { findUserByEmail } } = await query({ query: FIND_USER })
+
+    const data =
+      await mutate(
+        { mutation: UPDATE_USER_INFO,
+          variables: {
+            id: findUserByEmail.id,
+            gender: 'MALE',
+            location: 'Mä asun missä mä haluun',
+            dateOfBirth: null,
+            status: 'SINGLE',
+            bio: null,
+            tags: [],
+          },
+        })
+    expect(data.errors[0].message).toContain('Expected type Region.')
   })
 
   test('updateUserInfo throws error if status is wrong', async () => {
@@ -100,7 +119,7 @@ describe('updateUser tests', () => {
           variables: {
             id: findUserByEmail.id,
             gender: 'MALE',
-            location: 'Pori',
+            location: 'AHVENANMAA',
             dateOfBirth: null,
             status: 'ei kuulu sulle',
             bio: null,
@@ -119,7 +138,7 @@ describe('updateUser tests', () => {
           variables: {
             id: findUserByEmail.id,
             gender: 'MALE',
-            location: 'Pori',
+            location: 'AHVENANMAA',
             dateOfBirth: '<html> hehe </html>',
             status: 'SINGLE',
             bio: null,
@@ -134,7 +153,7 @@ describe('updateUser tests', () => {
 
     const expected = {
       gender: 'MALE',
-      location: 'Pori',
+      location: 'AHVENANMAA',
       dateOfBirth: '1998-11-11',
       status: 'SINGLE',
       bio: 'Tykkään ruokahetkistä perheen kanssa',
@@ -155,7 +174,7 @@ describe('updateUser tests', () => {
 
     const expected = {
       gender: 'MALE',
-      location: 'Pori',
+      location: 'AHVENANMAA',
       dateOfBirth: '1998-11-11',
       status: 'SINGLE',
       bio: `Donec in elementum sem, eu maximus neque. 
