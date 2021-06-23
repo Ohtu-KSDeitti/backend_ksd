@@ -64,6 +64,7 @@ type UserInfo {
   profileLikes: Int
   bio: String
   tags: [String]
+  prefRegions: [Region]
 }
 
 type Query {
@@ -105,6 +106,7 @@ type Mutation {
     dateOfBirth: String
     bio: String
     tags: [String]
+    prefRegions: [Region]
   ): UserInfo
   updateUserPassword(
     id: ID!

@@ -139,6 +139,7 @@ const addNewUser = async (user, client = docClient) => {
       profileLikes: 0,
       bio: '',
       tags: [],
+      prefRegions: [],
     },
     friendList: [],
   }
@@ -224,7 +225,15 @@ const updateUserAccount = (user, client = docClient) => {
 }
 
 const updateUserInfo = (userInfo, client = docClient) => {
-  const { location, gender, dateOfBirth, bio, tags, status } = userInfo
+  const {
+    location,
+    gender,
+    dateOfBirth,
+    bio,
+    tags,
+    status,
+    prefRegions,
+  } = userInfo
 
   parseBio(bio)
   parseDate(dateOfBirth)
@@ -236,6 +245,7 @@ const updateUserInfo = (userInfo, client = docClient) => {
     status: status,
     bio: bio,
     tags: tags,
+    prefRegions: prefRegions,
   }
 
   const params = {
