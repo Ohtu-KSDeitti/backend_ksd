@@ -33,7 +33,8 @@ mutation($id: ID!,
   $status: Status,
   $location: Region,
   $bio: String,
-  $tags: [String]){
+  $tags: [String],
+  $prefRegions: [Region]){
   updateUserInfo(
     id: $id,
     gender: $gender
@@ -42,6 +43,7 @@ mutation($id: ID!,
     location: $location
     bio: $bio
     tags: $tags
+    prefRegions: $prefRegions
     ){
       gender
       location
@@ -49,6 +51,7 @@ mutation($id: ID!,
       status
       bio
       tags
+      prefRegions
     }
 }
 `

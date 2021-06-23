@@ -31,6 +31,7 @@ describe('updateUser tests', () => {
       dateOfBirth: null,
       status: 'SINGLE',
       bio: null,
+      prefRegions: null,
       tags: [],
     }
 
@@ -38,13 +39,7 @@ describe('updateUser tests', () => {
       await mutate(
         { mutation: UPDATE_USER_INFO,
           variables: {
-            id: findUserByEmail.id,
-            gender: 'MALE',
-            location: 'AHVENANMAA',
-            dateOfBirth: null,
-            status: 'SINGLE',
-            bio: null,
-            tags: [],
+            id: findUserByEmail.id, ...expected,
           },
         })
 
@@ -60,6 +55,7 @@ describe('updateUser tests', () => {
       dateOfBirth: '1998-11-11',
       status: 'SINGLE',
       bio: 'Tykkään ruokahetkistä perheen kanssa',
+      prefRegions: ['AHVENANMAA', 'UUSIMAA'],
       tags: [],
     }
 
@@ -84,6 +80,7 @@ describe('updateUser tests', () => {
             location: 'AHVENANMAA',
             dateOfBirth: null,
             status: 'SINGLE',
+            prefRegions: ['AHVENANMAA'],
             bio: null,
             tags: [],
           },
@@ -103,6 +100,7 @@ describe('updateUser tests', () => {
             location: 'Mä asun missä mä haluun',
             dateOfBirth: null,
             status: 'SINGLE',
+            prefRegions: ['AHVENANMAA'],
             bio: null,
             tags: [],
           },
@@ -122,11 +120,32 @@ describe('updateUser tests', () => {
             location: 'AHVENANMAA',
             dateOfBirth: null,
             status: 'ei kuulu sulle',
+            prefRegions: ['AHVENANMAA'],
             bio: null,
             tags: [],
           },
         })
     expect(data.errors[0].message).toContain('Expected type Status')
+  })
+
+  test('updateUserInfo throws error if prefRegions is wrong', async () => {
+    const { data: { findUserByEmail } } = await query({ query: FIND_USER })
+
+    const data =
+      await mutate(
+        { mutation: UPDATE_USER_INFO,
+          variables: {
+            id: findUserByEmail.id,
+            gender: 'MALE',
+            location: 'AHVENANMAA',
+            dateOfBirth: null,
+            status: 'SINGLE',
+            prefRegions: ['teereenpeli', 'pataassa'],
+            bio: null,
+            tags: [],
+          },
+        })
+    expect(data.errors[0].message).toContain('Expected type Region')
   })
 
   test('updateUserInfo throws error if dateOfBirth is wrong', async () => {
@@ -141,6 +160,7 @@ describe('updateUser tests', () => {
             location: 'AHVENANMAA',
             dateOfBirth: '<html> hehe </html>',
             status: 'SINGLE',
+            prefRegions: ['AHVENANMAA'],
             bio: null,
             tags: [],
           },
@@ -157,6 +177,7 @@ describe('updateUser tests', () => {
       dateOfBirth: '1998-11-11',
       status: 'SINGLE',
       bio: 'Tykkään ruokahetkistä perheen kanssa',
+      prefRegions: ['AHVENANMAA'],
       tags: [],
     }
 
@@ -191,6 +212,7 @@ describe('updateUser tests', () => {
       Etiam fringilla, sem nec semper gravida, 
       felis nibh suscipit mi, quis lacinia orci lorem vel leo. 
       Duis faucibus vehicula hendrerit. Morbi tempor gravida purus. `,
+      prefRegions: ['AHVENANMAA'],
       tags: [],
     }
 
