@@ -26,7 +26,8 @@ const parseString = (str, min, max = 99, unicode = false) => {
 
 // Prevents spaces and listed special characters but allows å, ä, and ö
 const hasUnicodeChar = (str) => {
-  return /\s|[/!?$%^&*@()_+|~=`'"#{}.,;:<>]/gi.test(str)
+  // eslint-disable-next-line max-len
+  return /\s|[/!?$%^&*@()_+|~=`'"#¤{}.,;:<>]|\\|(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/gi.test(str)
 }
 
 const parseEmail = (str) => {

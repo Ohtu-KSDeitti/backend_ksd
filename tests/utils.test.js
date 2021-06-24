@@ -6,7 +6,7 @@ describe('Testing parseString function (that checks regex of words)', () => {
       parseString('Ucode0360+', 3, 16, true)
       expect(true).toBe(false)
     } catch (err) {
-      const expectedErr = 'Invalid input, contains unicode charachters.'
+      const expectedErr = 'Invalid input, contains unicode characters.'
       expect(err.message).toBe(expectedErr)
     }
   })
@@ -35,7 +35,7 @@ describe('Testing parseString function (that checks regex of words)', () => {
       expect(true).toBe(false)
     } catch (err) {
       const expErr =
-      'Invalid input, contains unicode charachters.'
+      'Invalid input, contains unicode characters.'
       expect(err.message).toBe(expErr)
     }
   })
