@@ -12,7 +12,7 @@ const parseString = (str, min, max = 99, unicode = false) => {
   if (unicode) {
     if (hasUnicodeChar(str)) {
       throw new UserInputError(
-        'Invalid input, contains unicode charachters.',
+        'Invalid input, contains unicode characters.',
       )
     }
   }
@@ -24,9 +24,10 @@ const parseString = (str, min, max = 99, unicode = false) => {
   }
 }
 
-// Accepts only [A-Z,a-z,0-9]+
+// Prevents spaces and listed special characters but allows å, ä, and ö
 const hasUnicodeChar = (str) => {
-  return /\W+/.test(str)
+  // eslint-disable-next-line max-len
+  return /\s|[/!?$%^&*@()_+|~=`'"#¤{}.,;:<>]|\\|(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/gi.test(str)
 }
 
 const parseEmail = (str) => {
