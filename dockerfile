@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 #Install packages specified in package.json
-RUN npm install
+RUN yarn install
 
 #Dump source code to docker image
 COPY . .
@@ -20,4 +20,4 @@ ENV PORT=8082
 EXPOSE 8082
 
 #Start backend
-CMD ["npm", "start"]
+CMD ["yarn", "start"]
