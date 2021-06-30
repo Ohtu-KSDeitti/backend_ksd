@@ -50,7 +50,7 @@ const parseBio = (bio) => {
       'Bio accepts only letters and spaces, max length 500',
     )
   }
-  if (/^([A-Z|a-z]+\s)*$/.test(bio)) {
+  if (/[/$%^*@_+|~=`"&#¤{}<>]|\\/gi.test(bio)) {
     throw new UserInputError(
       'Bio accepts only letters and spaces, max length 500',
     )
