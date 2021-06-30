@@ -20,4 +20,4 @@ ENV PORT=8082
 EXPOSE 8082
 
 #Start backend
-CMD ["npm", "start"]
+CMD ["yarn", "start"]
