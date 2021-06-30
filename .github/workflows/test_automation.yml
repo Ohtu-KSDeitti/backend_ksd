@@ -13,6 +13,6 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Run Jest tests
-        run: yarm run test
+        run: yarn run test
       - name: Run ESLint
         run: yarn run lint
