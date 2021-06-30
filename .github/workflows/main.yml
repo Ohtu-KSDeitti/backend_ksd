@@ -41,7 +41,7 @@ jobs:
       - name: Deployment status
         id: status
         run: |
-          sleep 120
+          sleep 160
           status=`aws deploy get-deployment \
             --deployment-id "$( aws deploy list-deployments \
               --application-name user-api-deployer \
