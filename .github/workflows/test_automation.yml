@@ -15,4 +15,4 @@ jobs:
       - name: Run Jest tests
         run: yarm run test
       - name: Run ESLint
-        run: yarm run lint
+        run: yarn run lint
